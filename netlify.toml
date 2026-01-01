@@ -82,17 +82,7 @@
   to = "/"
   status = 301
 
-# Handle trailing slashes consistently (optional, Next.js handles this)
-[[redirects]]
-  from = "/*/"
-  to = "/:splat"
-  status = 301
-
-# Custom 404 handling (Next.js App Router handles this, but explicit is good)
-[[redirects]]
-  from = "/*"
-  to = "/404"
-  status = 404
+# Let Next.js handle all routing and 404s - don't add catch-all redirects
 
 # Edge Functions configuration (if needed in future)
 [functions]
