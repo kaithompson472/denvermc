@@ -45,7 +45,7 @@ export function NetworkHealthCard({ refreshInterval = 30000 }: NetworkHealthCard
 
   const fetchHealth = useCallback(async () => {
     try {
-      const res = await fetch('/api/health');
+      const res = await fetch('/api/health', { cache: 'no-store' });
       const data: ApiResponse<NetworkHealth> = await res.json();
 
       if (!data.success) {

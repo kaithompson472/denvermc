@@ -74,7 +74,7 @@ export function NetworkMap({ nodes, className = '' }: NetworkMapProps) {
 
     async function fetchNodes() {
       try {
-        const res = await fetch('/api/nodes');
+        const res = await fetch('/api/nodes', { cache: 'no-store' });
         const data = await res.json();
         if (data.success && data.data) {
           setMapNodes(data.data);
