@@ -6,6 +6,8 @@ import type {
   NodeWithStats,
   CommunityStats,
   NetworkHealth,
+  NetworkStatusState,
+  HealthStatus,
   CreatePacketInput,
 } from '../types';
 import { isNodeOnline } from '../utils';
@@ -597,4 +599,97 @@ export async function runDataCleanup(): Promise<{
     dailyStatsDeleted,
     retentionDays: RETENTION_DAYS,
   };
+}
+
+// =============================================================================
+// Discord State Tracking Functions
+// =============================================================================
+
+/**
+ * Ensure the network_status_state table exists
+ */
+export async function ensureNetworkStatusStateTable(): Promise<void> {
+  await db.execute({
+    sql: `
+      CREATE TABLE IF NOT EXISTS network_status_state (
+        id INTEGER PRIMARY KEY CHECK (id = 1),
+        status TEXT NOT NULL CHECK (status IN ('healthy', 'degraded', 'offline')),
+        network_score INTEGER NOT NULL DEFAULT 0,
+        active_nodes INTEGER NOT NULL DEFAULT 0,
+        last_updated TEXT NOT NULL,
+        last_alert_sent TEXT
+      )
+    `,
+    args: [],
+  });
+}
+
+/**
+ * Get the last known network status state for Discord alert tracking
+ */
+export async function getNetworkStatusState(): Promise<NetworkStatusState | null> {
+  try {
+    await ensureNetworkStatusStateTable();
+
+    const result = await db.execute({
+      sql: 'SELECT * FROM network_status_state WHERE id = 1',
+      args: [],
+    });
+
+    if (result.rows.length === 0) return null;
+
+    const row = result.rows[0];
+    return {
+      status: row.status as HealthStatus,
+      network_score: Number(row.network_score),
+      active_nodes: Number(row.active_nodes),
+      last_updated: row.last_updated as string,
+      last_alert_sent: (row.last_alert_sent as string) || null,
+    };
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Update the network status state for Discord alert tracking
+ */
+export async function updateNetworkStatusState(
+  status: HealthStatus,
+  networkScore: number,
+  activeNodes: number,
+  alertSent: boolean = false
+): Promise<void> {
+  await ensureNetworkStatusStateTable();
+
+  const now = new Date().toISOString();
+
+  if (alertSent) {
+    await db.execute({
+      sql: `
+        INSERT INTO network_status_state (id, status, network_score, active_nodes, last_updated, last_alert_sent)
+        VALUES (1, ?, ?, ?, ?, ?)
+        ON CONFLICT(id) DO UPDATE SET
+          status = excluded.status,
+          network_score = excluded.network_score,
+          active_nodes = excluded.active_nodes,
+          last_updated = excluded.last_updated,
+          last_alert_sent = excluded.last_alert_sent
+      `,
+      args: [status, networkScore, activeNodes, now, now],
+    });
+  } else {
+    await db.execute({
+      sql: `
+        INSERT INTO network_status_state (id, status, network_score, active_nodes, last_updated)
+        VALUES (1, ?, ?, ?, ?)
+        ON CONFLICT(id) DO UPDATE SET
+          status = excluded.status,
+          network_score = excluded.network_score,
+          active_nodes = excluded.active_nodes,
+          last_updated = excluded.last_updated
+      `,
+      args: [status, networkScore, activeNodes, now],
+    });
+  }
 }
