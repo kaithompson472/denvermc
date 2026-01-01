@@ -1,0 +1,105 @@
+# Netlify configuration for Denver MeshCore Community Platform
+# Uses Next.js 16+ with App Router
+
+[build]
+  # Build command for Next.js
+  command = "npm run build"
+  # Publish directory for Next.js with Netlify
+  publish = ".next"
+
+[build.environment]
+  # Use Node.js 20 LTS
+  NODE_VERSION = "20"
+  # Ensure npm version compatibility
+  NPM_VERSION = "10"
+
+# Netlify Next.js Runtime (automatically detected, but explicit is better)
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+# Security and caching headers
+[[headers]]
+  for = "/*"
+  [headers.values]
+    # Security headers
+    X-Frame-Options = "DENY"
+    X-Content-Type-Options = "nosniff"
+    X-XSS-Protection = "1; mode=block"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=()"
+    # HSTS - enforce HTTPS
+    Strict-Transport-Security = "max-age=31536000; includeSubDomains; preload"
+    # Content Security Policy - production hardened
+    Content-Security-Policy = "default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https: blob:; font-src 'self' data:; connect-src 'self' https://*.letsmesh.net https://*.mapbox.com https://*.supabase.co wss://*.supabase.co https://*.basemaps.cartocdn.com https://*.carto.com; frame-ancestors 'none';"
+
+# Cache static assets aggressively
+[[headers]]
+  for = "/_next/static/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/fonts/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/images/*"
+  [headers.values]
+    Cache-Control = "public, max-age=86400, stale-while-revalidate=604800"
+
+[[headers]]
+  for = "/favicon.ico"
+  [headers.values]
+    Cache-Control = "public, max-age=86400"
+
+# API routes - no caching
+[[headers]]
+  for = "/api/*"
+  [headers.values]
+    Cache-Control = "no-store, no-cache, must-revalidate"
+
+# Development/Preview context overrides
+[context.deploy-preview]
+  command = "npm run build"
+  [context.deploy-preview.environment]
+    NODE_ENV = "development"
+
+[context.branch-deploy]
+  command = "npm run build"
+  [context.branch-deploy.environment]
+    NODE_ENV = "development"
+
+# Production context
+[context.production]
+  command = "npm run build"
+  [context.production.environment]
+    NODE_ENV = "production"
+
+# Redirects for common patterns
+[[redirects]]
+  from = "/home"
+  to = "/"
+  status = 301
+
+# Handle trailing slashes consistently (optional, Next.js handles this)
+[[redirects]]
+  from = "/*/"
+  to = "/:splat"
+  status = 301
+
+# Custom 404 handling (Next.js App Router handles this, but explicit is good)
+[[redirects]]
+  from = "/*"
+  to = "/404"
+  status = 404
+
+# Edge Functions configuration (if needed in future)
+[functions]
+  directory = "netlify/functions"
+  node_bundler = "esbuild"
+
+# Form handling (if needed)
+# Uncomment if using Netlify Forms
+# [[plugins]]
+#   package = "@netlify/plugin-form-detector"

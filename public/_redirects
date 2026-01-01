@@ -1,0 +1,20 @@
+# Netlify _redirects file for Denver MeshCore Community Platform
+# Note: Most redirects are handled in netlify.toml, this is for quick additions
+
+# Redirect common aliases
+/home    /    301
+
+# Short URLs for sharing (example patterns)
+# /mesh    /getting-started    301
+# /nodes   /observer           301
+# /join    /about              301
+
+# Legacy URL patterns (if migrating from another platform)
+# /blog/*  /posts/:splat       301
+
+# External redirects (example)
+# /discord  https://discord.gg/your-invite  302
+
+# Note: Next.js App Router handles 404s automatically
+# The catch-all redirect below is NOT needed with Next.js
+# /*       /404                404

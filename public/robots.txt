@@ -1,0 +1,36 @@
+# Denver MeshCore Community Platform
+# https://denvermc.com
+
+User-agent: *
+Allow: /
+
+# AI Search Crawlers - Explicit Allowances
+User-agent: GPTBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+User-agent: anthropic-ai
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Amazonbot
+Allow: /
+
+User-agent: cohere-ai
+Allow: /
+
+# Sitemap Location
+Sitemap: https://denvermc.com/sitemap.xml
+
+# Disallow API endpoints from indexing
+Disallow: /api/
