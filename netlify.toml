@@ -2,8 +2,8 @@
 # Uses Next.js 16+ with App Router
 
 [build]
-  # Build command for Next.js
-  command = "npm run build"
+  # Build command for Next.js - use npm ci for clean install
+  command = "npm ci && npm run build"
   # Publish directory for Next.js with Netlify
   publish = ".next"
 
@@ -12,6 +12,8 @@
   NODE_VERSION = "20"
   # Ensure npm version compatibility
   NPM_VERSION = "10"
+  # Skip dependency cache to ensure fresh install
+  NPM_FLAGS = "--prefer-offline=false"
 
 # Netlify Next.js Runtime (automatically detected, but explicit is better)
 [[plugins]]
@@ -61,18 +63,18 @@
 
 # Development/Preview context overrides
 [context.deploy-preview]
-  command = "npm run build"
+  command = "npm ci && npm run build"
   [context.deploy-preview.environment]
     NODE_ENV = "development"
 
 [context.branch-deploy]
-  command = "npm run build"
+  command = "npm ci && npm run build"
   [context.branch-deploy.environment]
     NODE_ENV = "development"
 
 # Production context
 [context.production]
-  command = "npm run build"
+  command = "npm ci && npm run build"
   [context.production.environment]
     NODE_ENV = "production"
 
