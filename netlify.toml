@@ -61,20 +61,20 @@
   [headers.values]
     Cache-Control = "no-store, no-cache, must-revalidate"
 
-# Development/Preview context overrides
+# Preview context - clear cache to avoid stale artifacts
 [context.deploy-preview]
-  command = "npm ci && npm run build"
+  command = "rm -rf .next && npm ci && npm run build"
   [context.deploy-preview.environment]
-    NODE_ENV = "development"
+    NODE_ENV = "production"
 
 [context.branch-deploy]
-  command = "npm ci && npm run build"
+  command = "rm -rf .next && npm ci && npm run build"
   [context.branch-deploy.environment]
-    NODE_ENV = "development"
+    NODE_ENV = "production"
 
-# Production context
+# Production context - clear cache to avoid stale artifacts
 [context.production]
-  command = "npm ci && npm run build"
+  command = "rm -rf .next && npm ci && npm run build"
   [context.production.environment]
     NODE_ENV = "production"
 
