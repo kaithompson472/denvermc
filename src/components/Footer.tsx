@@ -3,6 +3,7 @@ import Image from 'next/image';
 
 const quickLinks = [
   { href: '/', label: 'Home' },
+  { href: '/why-meshcore', label: 'Why MeshCore?' },
   { href: '/nodes', label: 'Nodes' },
   { href: '/observer', label: 'Observer' },
   { href: '/about', label: 'About' },

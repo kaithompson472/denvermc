@@ -13,6 +13,7 @@ interface NavLink {
 
 const navLinks: NavLink[] = [
   { href: '/', label: 'Home' },
+  { href: '/why-meshcore', label: 'Why MeshCore?' },
   { href: '/map', label: 'Map' },
   { href: '/observer', label: 'Observer' },
   { href: '/about', label: 'About' },
