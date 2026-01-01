@@ -254,3 +254,60 @@ export function formatBatteryPercent(mV: number | null): number | null {
   const percent = Math.round(((mV - min) / (max - min)) * 100);
   return Math.max(0, Math.min(100, percent));
 }
+
+// =============================================================================
+// Discord Webhook Types
+// =============================================================================
+
+/**
+ * Discord embed field structure
+ */
+export interface DiscordEmbedField {
+  name: string;
+  value: string;
+  inline?: boolean;
+}
+
+/**
+ * Discord embed structure for webhook messages
+ */
+export interface DiscordEmbed {
+  title: string;
+  description?: string;
+  color: number;
+  fields: DiscordEmbedField[];
+  footer?: {
+    text: string;
+    icon_url?: string;
+  };
+  timestamp?: string;
+  thumbnail?: {
+    url: string;
+  };
+}
+
+/**
+ * Discord webhook payload structure
+ */
+export interface DiscordWebhookPayload {
+  username?: string;
+  avatar_url?: string;
+  content?: string;
+  embeds: DiscordEmbed[];
+}
+
+/**
+ * Network status state for Discord alert tracking
+ */
+export interface NetworkStatusState {
+  status: HealthStatus;
+  network_score: number;
+  active_nodes: number;
+  last_updated: string;
+  last_alert_sent: string | null;
+}
+
+/**
+ * Discord notification types
+ */
+export type DiscordNotificationType = 'scheduled' | 'status_change' | 'node_offline' | 'recovery';

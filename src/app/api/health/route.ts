@@ -2,7 +2,9 @@ import { NextResponse } from 'next/server';
 import { getNetworkHealth, db } from '@/lib/db';
 import type { ApiResponse, NetworkHealth } from '@/lib/types';
 
-export const revalidate = 30; // Cache for 30 seconds
+// Force dynamic rendering to prevent stale cache issues on Netlify
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 // meshcore-bot API URL (configured via environment variable)
 const BOT_API_URL = process.env.BOT_API_URL;
@@ -329,7 +331,11 @@ export async function GET() {
       data: health,
     });
 
-    response.headers.set('Cache-Control', 'public, s-maxage=30, stale-while-revalidate=15');
+    // Disable CDN caching for real-time data (Cloudflare + Netlify)
+    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    response.headers.set('CDN-Cache-Control', 'no-store');
+    response.headers.set('Netlify-CDN-Cache-Control', 'no-store, durable=false');
+    response.headers.set('Cloudflare-CDN-Cache-Control', 'no-store');
 
     return response;
   } catch (error) {

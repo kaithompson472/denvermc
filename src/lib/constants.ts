@@ -28,6 +28,7 @@ export const API_ROUTES = {
   STATS: '/api/stats',
   HEALTH: '/api/health',
   PACKETS: '/api/packets',
+  DISCORD_WEBHOOK: '/api/discord-webhook',
 } as const;
 
 export const API_CACHE_TIMES = {
