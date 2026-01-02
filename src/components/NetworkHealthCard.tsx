@@ -178,7 +178,7 @@ export function NetworkHealthCard({ refreshInterval = 30000 }: NetworkHealthCard
             } mb-4`}
           >
             {statusConfig ? (
-              <span className={`text-2xl font-bold ${statusConfig.textColor}`}>
+              <span className={`text-base font-bold ${statusConfig.textColor}`}>
                 {statusConfig.label}
               </span>
             ) : (
