@@ -258,12 +258,12 @@ function calculateNetworkScore(
 }
 
 /**
- * Update observer node's last_seen timestamp when bot is active
+ * Update observer/gateway node's last_seen timestamp when bot is active
  */
 async function updateObserverLastSeen(): Promise<void> {
   try {
     await db.execute({
-      sql: `UPDATE nodes SET last_seen = datetime('now') WHERE name LIKE '%Observer%' OR node_type = 'room_server'`,
+      sql: `UPDATE nodes SET last_seen = datetime('now') WHERE node_type = 'gateway'`,
       args: [],
     });
   } catch {

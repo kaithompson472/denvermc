@@ -49,6 +49,7 @@ function getTodayDateString(): string {
 
 /**
  * Insert a new packet into the database with all fields
+ * Uses ON CONFLICT to skip duplicate packets (same origin_key from multiple observers)
  */
 export async function insertPacket(packet: ParsedPacket): Promise<void> {
   const client = getDb();
@@ -60,6 +61,7 @@ export async function insertPacket(packet: ParsedPacket): Promise<void> {
         score, duration, route, len, payload_len, direction
       )
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+      ON CONFLICT(origin_key) DO NOTHING
     `,
     args: [
       packet.nodeId,

@@ -44,3 +44,6 @@ CREATE INDEX IF NOT EXISTS idx_packets_timestamp ON packets(timestamp);
 CREATE INDEX IF NOT EXISTS idx_packets_node_id ON packets(node_id);
 CREATE INDEX IF NOT EXISTS idx_nodes_last_seen ON nodes(last_seen);
 CREATE INDEX IF NOT EXISTS idx_stats_node_date ON node_stats_daily(node_id, date);
+
+-- Unique constraint on origin_key to prevent duplicate packets from multiple observers
+CREATE UNIQUE INDEX IF NOT EXISTS idx_packets_origin_key_unique ON packets(origin_key);
