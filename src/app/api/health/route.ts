@@ -259,11 +259,18 @@ function calculateNetworkScore(
 
 /**
  * Update observer/gateway node's last_seen timestamp when bot is active
+ * Matches by node_type OR name patterns (case-insensitive, handles leetspeak)
  */
 async function updateObserverLastSeen(): Promise<void> {
   try {
     await db.execute({
-      sql: `UPDATE nodes SET last_seen = datetime('now') WHERE node_type = 'gateway'`,
+      sql: `UPDATE nodes SET last_seen = datetime('now')
+            WHERE node_type = 'gateway'
+               OR LOWER(name) LIKE '%observer%'
+               OR LOWER(name) LIKE '%0bserver%'
+               OR LOWER(name) LIKE '%obs3rver%'
+               OR LOWER(name) LIKE '%0bs3rver%'
+               OR LOWER(name) LIKE '%gateway%'`,
       args: [],
     });
   } catch {
