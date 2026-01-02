@@ -40,12 +40,35 @@ const createIcon = (color: string, isOnline: boolean) => {
 };
 
 const NODE_COLORS: Record<string, string> = {
+  gateway: '#f97316', // orange - observers/gateways
   companion: '#8b5cf6', // purple
   repeater: '#22c55e', // forest-500
   room_server: '#0ea5e9', // mesh
 };
 
+// Display names for the legend
+const NODE_TYPE_LABELS: Record<string, string> = {
+  gateway: 'Observer',
+  companion: 'Companion',
+  repeater: 'Repeater',
+  room_server: 'Room Server',
+};
+
 const DEFAULT_NODE_COLOR = '#6b7280'; // gray for unknown types
+
+/**
+ * Get the color for a node based on type or name pattern
+ * Observers are detected by name even if node_type isn't 'gateway'
+ */
+function getNodeColor(node: NodeWithStats): string {
+  // Check if name indicates this is an observer
+  const name = node.name?.toLowerCase() || '';
+  if (name.includes('observer') || name.includes('0bserver') ||
+      name.includes('obs3rver') || name.includes('0bs3rver')) {
+    return NODE_COLORS.gateway;
+  }
+  return NODE_COLORS[node.node_type] || DEFAULT_NODE_COLOR;
+}
 
 interface NetworkMapProps {
   nodes?: NodeWithStats[];
@@ -146,7 +169,7 @@ export function NetworkMap({ nodes, className = '' }: NetworkMapProps) {
             key={node.id}
             position={[node.latitude!, node.longitude!]}
             icon={createIcon(
-              NODE_COLORS[node.node_type] || NODE_COLORS.node,
+              getNodeColor(node),
               node.is_online
             )}
           >
@@ -210,7 +233,7 @@ export function NetworkMap({ nodes, className = '' }: NetworkMapProps) {
                 className="h-3 w-3 rounded-full"
                 style={{ background: color }}
               />
-              <span className="capitalize">{type.replace('_', ' ')}</span>
+              <span>{NODE_TYPE_LABELS[type] || type.replace('_', ' ')}</span>
             </div>
           ))}
         </div>
