@@ -1,6 +1,27 @@
 import { NextResponse } from 'next/server';
-import { getNodesWithStats } from '@/lib/db';
+import { getNodesWithStats, db } from '@/lib/db';
 import type { ApiResponse, NodeWithStats } from '@/lib/types';
+
+/**
+ * Update observer/gateway node's last_seen timestamp
+ * Matches by node_type OR name patterns (case-insensitive, handles leetspeak)
+ */
+async function updateObserverLastSeen(): Promise<void> {
+  try {
+    await db.execute({
+      sql: `UPDATE nodes SET last_seen = datetime('now')
+            WHERE node_type = 'gateway'
+               OR LOWER(name) LIKE '%observer%'
+               OR LOWER(name) LIKE '%0bserver%'
+               OR LOWER(name) LIKE '%obs3rver%'
+               OR LOWER(name) LIKE '%0bs3rver%'
+               OR LOWER(name) LIKE '%gateway%'`,
+      args: [],
+    });
+  } catch {
+    // Ignore errors - not critical
+  }
+}
 
 // Force dynamic rendering to prevent stale cache issues on Netlify
 export const dynamic = 'force-dynamic';
@@ -12,6 +33,9 @@ export const revalidate = 0;
  */
 export async function GET() {
   try {
+    // Update observer last_seen before fetching (fire and forget)
+    updateObserverLastSeen();
+
     const nodes = await getNodesWithStats();
 
     const response = NextResponse.json<ApiResponse<NodeWithStats[]>>({
