@@ -89,7 +89,7 @@ export function buildHealthSummaryEmbed(health: NetworkHealth): DiscordEmbed {
       ...(health.score_breakdown ? [buildScoreBreakdownField(health.score_breakdown)] : []),
     ],
     footer: {
-      text: `${SITE_NAME} | denvermc.org`,
+      text: `${SITE_NAME} | denvermc.com`,
     },
     timestamp: new Date().toISOString(),
   };
@@ -147,7 +147,7 @@ export function buildStatusChangeEmbed(
       },
     ],
     footer: {
-      text: `${SITE_NAME} | View details at denvermc.org`,
+      text: `${SITE_NAME} | View details at denvermc.com`,
     },
     timestamp: new Date().toISOString(),
   };
