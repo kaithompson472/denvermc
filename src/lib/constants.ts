@@ -44,6 +44,9 @@ export const API_CACHE_TIMES = {
 /** Online threshold in milliseconds (15 minutes) */
 export const ONLINE_THRESHOLD_MS = 15 * 60 * 1000;
 
+/** Map visibility threshold in milliseconds (24 hours) - nodes not seen within this time are hidden from map */
+export const MAP_VISIBILITY_THRESHOLD_MS = 24 * 60 * 60 * 1000;
+
 /** Default refresh interval for live data (1 minute) */
 export const DEFAULT_REFRESH_INTERVAL = 60000;
 

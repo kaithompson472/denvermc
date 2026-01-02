@@ -5,6 +5,7 @@ import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import type { NodeWithStats } from '@/lib/types';
+import { MAP_VISIBILITY_THRESHOLD_MS } from '@/lib/constants';
 
 // Fix for default marker icons in Next.js - only run on client
 if (typeof window !== 'undefined') {
@@ -70,6 +71,17 @@ function getNodeColor(node: NodeWithStats): string {
   return NODE_COLORS[node.node_type] || DEFAULT_NODE_COLOR;
 }
 
+/**
+ * Check if a node was seen within the map visibility threshold (24 hours)
+ */
+function isNodeRecentlyActive(node: NodeWithStats): boolean {
+  if (!node.last_seen) return false;
+  const lastSeenTime = node.last_seen.endsWith('Z')
+    ? new Date(node.last_seen).getTime()
+    : new Date(node.last_seen + 'Z').getTime();
+  return Date.now() - lastSeenTime < MAP_VISIBILITY_THRESHOLD_MS;
+}
+
 interface NetworkMapProps {
   nodes?: NodeWithStats[];
   className?: string;
@@ -115,9 +127,9 @@ export function NetworkMap({ nodes, className = '' }: NetworkMapProps) {
     fetchNodes();
   }, [nodes]);
 
-  // Filter nodes with valid coordinates
+  // Filter nodes with valid coordinates AND seen within 24 hours
   const nodesWithLocation = mapNodes.filter(
-    (node) => node.latitude !== null && node.longitude !== null
+    (node) => node.latitude !== null && node.longitude !== null && isNodeRecentlyActive(node)
   );
 
   // Calculate map bounds if we have nodes
@@ -243,10 +255,13 @@ export function NetworkMap({ nodes, className = '' }: NetworkMapProps) {
       <div className="absolute top-4 right-4 bg-night-900/90 backdrop-blur-sm rounded-lg p-3 z-[1000]">
         <div className="text-sm text-foreground">
           <span className="text-mesh font-bold">{nodesWithLocation.length}</span>
-          <span className="text-foreground-muted"> nodes with location</span>
+          <span className="text-foreground-muted"> active nodes</span>
         </div>
         <div className="text-xs text-foreground-muted">
-          {nodesWithLocation.filter(n => n.is_online).length} online
+          {nodesWithLocation.filter(n => n.is_online).length} online now
+        </div>
+        <div className="text-[10px] text-foreground-muted/70 mt-1">
+          Showing nodes seen in last 24h
         </div>
       </div>
     </div>
