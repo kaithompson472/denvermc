@@ -4,6 +4,10 @@ import { NetworkMapWrapper } from '@/components';
 import JsonLd from '@/components/JsonLd';
 import { generateBreadcrumbSchema } from '@/lib/schemas/breadcrumb';
 
+// Force dynamic rendering to prevent stale cache issues on Netlify
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export const metadata: Metadata = {
   title: 'Network Map',
   description:
