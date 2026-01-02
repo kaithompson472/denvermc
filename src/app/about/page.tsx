@@ -310,11 +310,9 @@ export default function AboutPage() {
               Resources & Links
             </h2>
             <div className="grid md:grid-cols-3 gap-6">
-              {/* Observer Link */}
-              <a
-                href="https://analyzer.letsmesh.net/node/4D0CC1003DBF678DF420907F9ACD77BD71D9E4C34300F72660F6BA6A2656A868"
-                target="_blank"
-                rel="noopener noreferrer"
+              {/* Analyzers Link */}
+              <Link
+                href="/observer"
                 className="card-mesh p-6 hover:border-mesh transition-colors group"
               >
                 <div className="flex items-start gap-4">
@@ -325,20 +323,20 @@ export default function AboutPage() {
                   </div>
                   <div>
                     <h3 className="text-lg font-bold mb-1 text-foreground group-hover:text-mesh transition-colors">
-                      Denver Observer
+                      Denver Analyzers
                     </h3>
                     <p className="text-sm text-foreground-muted mb-2">
                       View real-time network statistics and node activity for the Denver area.
                     </p>
                     <span className="text-mesh text-sm inline-flex items-center gap-1">
-                      View Observer
+                      View Analyzers
                       <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
                       </svg>
                     </span>
                   </div>
                 </div>
-              </a>
+              </Link>
 
               {/* LetsMesh Link */}
               <a

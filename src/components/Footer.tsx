@@ -5,7 +5,7 @@ const quickLinks = [
   { href: '/', label: 'Home' },
   { href: '/why-meshcore', label: 'Why MeshCore?' },
   { href: '/nodes', label: 'Nodes' },
-  { href: '/observer', label: 'Observer' },
+  { href: '/observer', label: 'Analyzers' },
   { href: '/about', label: 'About' },
   { href: '/start', label: 'Get Started' },
 ];
@@ -13,9 +13,9 @@ const quickLinks = [
 const communityLinks = [
   { href: 'https://discord.gg/QpaW8FTTCE', label: 'Discord', icon: 'discord', external: true },
   {
-    href: 'https://analyzer.letsmesh.net/node/4D0CC1003DBF678DF420907F9ACD77BD71D9E4C34300F72660F6BA6A2656A868',
-    label: 'Observer',
-    external: true,
+    href: '/observer',
+    label: 'Analyzers',
+    external: false,
   },
 ];
 

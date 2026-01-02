@@ -261,9 +261,14 @@ const resources = [
     description: "Real-time network visualization and node statistics",
   },
   {
-    name: "Denver Observer Node",
+    name: "M3SHGHOST Analyzer",
     url: "https://analyzer.letsmesh.net/node/4D0CC1003DBF678DF420907F9ACD77BD71D9E4C34300F72660F6BA6A2656A868",
-    description: "View our main Denver observer node on LetsMesh",
+    description: "View the M3SHGHOST analyzer node on LetsMesh",
+  },
+  {
+    name: "Meadowood Analyzer",
+    url: "https://analyzer.letsmesh.net/node/92D29EDD92724217FB1D42E2D6226004F70469F77D1D6D8C4B6C3B26F78B1001",
+    description: "View the Meadowood analyzer node on LetsMesh",
   },
   {
     name: "Denver MeshCore Discord",

@@ -15,7 +15,7 @@ const navLinks: NavLink[] = [
   { href: '/', label: 'Home' },
   { href: '/why-meshcore', label: 'Why MeshCore?' },
   { href: '/map', label: 'Map' },
-  { href: '/observer', label: 'Observer' },
+  { href: '/observer', label: 'Analyzers' },
   { href: '/about', label: 'About' },
   { href: '/start', label: 'Get Started' },
 ];

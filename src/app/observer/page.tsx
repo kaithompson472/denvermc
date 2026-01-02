@@ -5,11 +5,12 @@ import JsonLd from '@/components/JsonLd';
 import { generateBreadcrumbSchema } from '@/lib/schemas/breadcrumb';
 
 export const metadata: Metadata = {
-  title: 'M3SHGHOST OBSERVER',
+  title: 'Denver MeshCore Analyzers',
   description:
-    'Live network monitoring for Denver MeshCore. The M3SHGHOST OBSERVER tracks mesh network status, node activity, signal strength, and network health metrics in real-time across the Colorado Front Range.',
+    'Live network monitoring for Denver MeshCore. Our analyzers track mesh network status, node activity, signal strength, and network health metrics in real-time across the Colorado Front Range.',
   keywords: [
     'mesh network',
+    'analyzer',
     'observer',
     'network monitoring',
     'Denver',
@@ -22,19 +23,27 @@ export const metadata: Metadata = {
     canonical: '/observer',
   },
   openGraph: {
-    title: 'M3SHGHOST OBSERVER | Denver MeshCore',
+    title: 'Denver MeshCore Analyzers',
     description:
       'Live network monitoring for Denver MeshCore. Track mesh network status and node activity in real-time.',
     url: 'https://denvermc.com/observer',
   },
 };
 
-const OBSERVER_URL =
-  'https://analyzer.letsmesh.net/node/4D0CC1003DBF678DF420907F9ACD77BD71D9E4C34300F72660F6BA6A2656A868';
+const OBSERVERS = [
+  {
+    name: 'M3SHGHOST',
+    url: 'https://analyzer.letsmesh.net/node/4D0CC1003DBF678DF420907F9ACD77BD71D9E4C34300F72660F6BA6A2656A868',
+  },
+  {
+    name: 'Meadowood',
+    url: 'https://analyzer.letsmesh.net/node/92D29EDD92724217FB1D42E2D6226004F70469F77D1D6D8C4B6C3B26F78B1001',
+  },
+];
 
 const breadcrumbData = generateBreadcrumbSchema([
   { name: 'Home', url: 'https://denvermc.com' },
-  { name: 'Observer', url: 'https://denvermc.com/observer' },
+  { name: 'Analyzers', url: 'https://denvermc.com/observer' },
 ]);
 
 export default function ObserverPage() {
@@ -84,12 +93,8 @@ export default function ObserverPage() {
             </div>
 
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold mb-4 font-mono tracking-tight">
-              <span className="text-gradient-mesh">M3SHGH</span>
-              <span className="text-sunset-500">O</span>
-              <span className="text-gradient-mesh">ST</span>
-              <span className="text-foreground-muted"> </span>
-              <span className="text-mesh">0</span>
-              <span className="text-gradient-mesh">BSERVER</span>
+              <span className="text-gradient-mesh">Denver </span>
+              <span className="text-mesh">Analyzers</span>
             </h1>
 
             <p className="text-xl md:text-2xl text-foreground-muted mb-4">
@@ -97,62 +102,67 @@ export default function ObserverPage() {
             </p>
 
             <p className="text-foreground-muted max-w-2xl mx-auto mb-8">
-              The M3SHGHOST OBSERVER is a dedicated monitoring node that watches over the Denver mesh network,
+              Our analyzer nodes are dedicated monitoring stations that watch over the Denver mesh network,
               tracking activity, measuring performance, and ensuring network health across the Front Range.
             </p>
 
-            {/* Primary CTA */}
-            <a
-              href={OBSERVER_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="inline-flex items-center gap-3 btn-accent text-lg px-8 py-4 focus-ring"
-            >
-              <svg
-                className="h-6 w-6"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                />
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                />
-              </svg>
-              Open Live Analyzer
-              <svg
-                className="h-5 w-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
-                />
-              </svg>
-            </a>
+            {/* Analyzer CTAs */}
+            <div className="flex flex-col sm:flex-row gap-4 justify-center">
+              {OBSERVERS.map((observer) => (
+                <a
+                  key={observer.name}
+                  href={observer.url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-3 btn-accent text-lg px-6 py-4 focus-ring"
+                >
+                  <svg
+                    className="h-6 w-6"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                    />
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                    />
+                  </svg>
+                  {observer.name}
+                  <svg
+                    className="h-5 w-5"
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                    aria-hidden="true"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                    />
+                  </svg>
+                </a>
+              ))}
+            </div>
           </div>
         </section>
 
 
-        {/* What is the Observer Section */}
+        {/* What are Analyzers Section */}
         <section className="px-6 py-16">
           <div className="mx-auto max-w-6xl">
             <h2 className="text-3xl font-bold text-center mb-12 text-foreground">
-              What is the <span className="text-mesh">Observer</span>?
+              What are <span className="text-mesh">Analyzers</span>?
             </h2>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -176,8 +186,8 @@ export default function ObserverPage() {
                 </div>
                 <h3 className="text-lg font-semibold text-foreground mb-2">Network Monitoring</h3>
                 <p className="text-foreground-muted text-sm">
-                  The observer node continuously monitors network traffic, tracking messages as they propagate
-                  through the Denver mesh network. It provides visibility into network activity patterns and
+                  Our analyzer nodes continuously monitor network traffic, tracking messages as they propagate
+                  through the Denver mesh network. They provide visibility into network activity patterns and
                   communication flows.
                 </p>
               </div>
@@ -202,7 +212,7 @@ export default function ObserverPage() {
                 </div>
                 <h3 className="text-lg font-semibold text-foreground mb-2">Performance Metrics</h3>
                 <p className="text-foreground-muted text-sm">
-                  Track signal strength, hop counts, and message delivery rates. The observer collects
+                  Track signal strength, hop counts, and message delivery rates. The analyzers collect
                   performance data that helps identify network bottlenecks and optimize node placement
                   across the Front Range.
                 </p>
