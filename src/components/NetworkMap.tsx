@@ -5,7 +5,7 @@ import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import type { NodeWithStats } from '@/lib/types';
-import { MAP_VISIBILITY_THRESHOLD_MS } from '@/lib/constants';
+import { MAP_VISIBILITY_THRESHOLD_MS, OBSERVER_REFRESH_INTERVAL } from '@/lib/constants';
 
 // Fix for default marker icons in Next.js - only run on client
 if (typeof window !== 'undefined') {
@@ -124,7 +124,12 @@ export function NetworkMap({ nodes, className = '' }: NetworkMapProps) {
       }
     }
 
+    // Initial fetch
     fetchNodes();
+
+    // Auto-refresh every 30 seconds
+    const interval = setInterval(fetchNodes, OBSERVER_REFRESH_INTERVAL);
+    return () => clearInterval(interval);
   }, [nodes]);
 
   // Filter nodes with valid coordinates AND seen within 24 hours

@@ -33,8 +33,8 @@ export const revalidate = 0;
  */
 export async function GET() {
   try {
-    // Update observer last_seen before fetching (fire and forget)
-    updateObserverLastSeen();
+    // Update observer last_seen before fetching
+    await updateObserverLastSeen();
 
     const nodes = await getNodesWithStats();
 
