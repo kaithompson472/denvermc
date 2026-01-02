@@ -261,9 +261,9 @@ const resources = [
     description: "Real-time network visualization and node statistics",
   },
   {
-    name: "M3SHGHOST Analyzer",
+    name: "denvermc.com Analyzer",
     url: "https://analyzer.letsmesh.net/node/4D0CC1003DBF678DF420907F9ACD77BD71D9E4C34300F72660F6BA6A2656A868",
-    description: "View the M3SHGHOST analyzer node on LetsMesh",
+    description: "View the denvermc.com analyzer node on LetsMesh",
   },
   {
     name: "Meadowood Analyzer",
