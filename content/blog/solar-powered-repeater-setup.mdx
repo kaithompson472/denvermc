@@ -1,0 +1,69 @@
+---
+title: "Building a Solar-Powered MeshCore Repeater for Colorado Mountains"
+description: "Step-by-step guide to building a solar-powered MeshCore repeater for Colorado's mountains. Learn about power requirements, weatherproofing, and optimal placement."
+date: "2024-12-28"
+author: "Denver MeshCore Team"
+tags: ["Solar", "Repeater", "DIY", "Mountains"]
+published: true
+---
+
+# Building a Solar-Powered MeshCore Repeater
+
+A well-placed solar repeater can extend mesh network coverage across entire mountain valleys. Here's how to build one for Colorado's challenging conditions.
+
+## Why Solar Repeaters?
+
+Remote mountain locations lack power infrastructure but offer incredible line-of-sight coverage. A single repeater on a peak can connect communities separated by miles of terrain.
+
+## Components Needed
+
+### Power System
+- **Solar panel:** 10-20W panel (oversized for Colorado's winter days)
+- **Battery:** 12V 7-20Ah LiFePO4 (cold-tolerant chemistry)
+- **Charge controller:** Basic PWM controller with low-voltage cutoff
+- **DC-DC converter:** 12V to 5V for powering the node
+
+### Node Hardware
+- **RAK WisBlock** or similar low-power board
+- **High-gain antenna:** 5-8dBi omnidirectional or Yagi for directional
+- **Weatherproof enclosure:** IP67 rated minimum
+
+### Mounting
+- **Mounting pole:** Galvanized steel or aluminum
+- **Guy wires:** For exposed ridgeline installations
+- **Ground rod:** Lightning protection essential in Colorado
+
+## Power Calculations
+
+Colorado averages 3-4 peak sun hours in winter. For a node drawing 50mA average:
+
+- Daily consumption: 50mA × 24h = 1.2Ah
+- Winter generation (15W panel): ~3-4Ah/day
+- Battery reserve: 3-5 days minimum
+
+This gives plenty of margin for cloudy periods and snow coverage.
+
+## Installation Tips
+
+### Site Selection
+- Choose locations with clear line-of-sight to target areas
+- Avoid areas prone to heavy snow accumulation
+- Consider accessibility for maintenance
+
+### Weatherproofing
+- Use silicone-filled cable glands for all wire entries
+- Orient enclosure to minimize sun exposure
+- Allow for thermal expansion in mounting
+
+### Testing
+- Monitor remotely for the first month
+- Check battery levels during winter storms
+- Verify coverage matches predictions
+
+## Maintenance Schedule
+
+- **Monthly:** Remote status check
+- **Quarterly:** Physical inspection if accessible
+- **Annually:** Battery health check, antenna inspection
+
+Building repeaters is one of the most impactful ways to contribute to Denver's mesh network. Contact us through our [community page](/community) to coordinate placement with existing infrastructure.
