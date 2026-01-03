@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { getAllTags } from '@/lib/blog';
 import JsonLd from '@/components/JsonLd';
 import { generateBreadcrumbSchema } from '@/lib/schemas/breadcrumb';
+import { BASE_URL } from '@/lib/constants';
 
 export const metadata: Metadata = {
   title: {
@@ -18,7 +19,7 @@ export const metadata: Metadata = {
     title: 'Denver MeshCore Blog',
     description:
       'News, tutorials, and updates from the Denver MeshCore community. Learn about mesh networking and off-grid communication.',
-    url: 'https://denvermc.com/blog',
+    url: `${BASE_URL}/blog`,
     type: 'website',
   },
   twitter: {
@@ -30,8 +31,8 @@ export const metadata: Metadata = {
 };
 
 const breadcrumbData = generateBreadcrumbSchema([
-  { name: 'Home', url: 'https://denvermc.com' },
-  { name: 'Blog', url: 'https://denvermc.com/blog' },
+  { name: 'Home', url: BASE_URL },
+  { name: 'Blog', url: `${BASE_URL}/blog` },
 ]);
 
 interface BlogLayoutProps {

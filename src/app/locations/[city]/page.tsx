@@ -13,6 +13,7 @@ import {
   getCoverageBadgeColor,
   getCoverageDescription,
 } from '@/lib/utils/coverage';
+import { BASE_URL } from '@/lib/constants';
 
 interface CityPageProps {
   params: Promise<{ city: string }>;
@@ -55,7 +56,7 @@ export async function generateMetadata({ params }: CityPageProps): Promise<Metad
     openGraph: {
       title: `${location.name} Mesh Network | Denver MeshCore`,
       description: location.description,
-      url: `https://denvermc.com/locations/${location.slug}`,
+      url: `${BASE_URL}/locations/${location.slug}`,
       type: 'website',
     },
     twitter: {
@@ -117,9 +118,9 @@ export default async function CityPage({ params }: CityPageProps) {
   }
 
   const breadcrumbData = generateBreadcrumbSchema([
-    { name: 'Home', url: 'https://denvermc.com' },
-    { name: 'Locations', url: 'https://denvermc.com/locations' },
-    { name: location.name, url: `https://denvermc.com/locations/${location.slug}` },
+    { name: 'Home', url: BASE_URL },
+    { name: 'Locations', url: `${BASE_URL}/locations` },
+    { name: location.name, url: `${BASE_URL}/locations/${location.slug}` },
   ]);
 
   const pageSchema = {
@@ -127,7 +128,7 @@ export default async function CityPage({ params }: CityPageProps) {
     '@type': 'Place',
     name: `${location.name} Mesh Network`,
     description: location.description,
-    url: `https://denvermc.com/locations/${location.slug}`,
+    url: `${BASE_URL}/locations/${location.slug}`,
     geo: {
       '@type': 'GeoCoordinates',
       latitude: location.coordinates.lat,

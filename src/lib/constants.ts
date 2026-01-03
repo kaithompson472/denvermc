@@ -6,6 +6,7 @@
 // Site Information
 // =============================================================================
 
+export const BASE_URL = 'https://denvermc.com';
 export const SITE_NAME = 'Denver MeshCore';
 export const SITE_TAGLINE = 'Colorado\'s decentralized mesh network community';
 export const SITE_DESCRIPTION = 'Join Colorado\'s growing mesh network community. Connect with fellow mesh enthusiasts, share knowledge, and help build resilient off-grid communication infrastructure.';

@@ -8,6 +8,7 @@ import JsonLd, {
   websiteSchema,
   communityOrganizationSchema,
 } from "@/components/JsonLd";
+import { BASE_URL } from "@/lib/constants";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -22,7 +23,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://denvermc.com"),
+  metadataBase: new URL(BASE_URL),
   title: {
     default: "Denver MeshCore Community Platform",
     template: "%s | Denver MeshCore",
@@ -70,7 +71,7 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://denvermc.com",
+    url: BASE_URL,
     siteName: "Denver MeshCore",
     title: "Denver MeshCore Community Platform",
     description:

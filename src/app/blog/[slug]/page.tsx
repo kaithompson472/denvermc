@@ -9,6 +9,7 @@ import { MDXRemote } from 'next-mdx-remote/rsc';
 import { useMDXComponents } from '../../../../mdx-components';
 import remarkGfm from 'remark-gfm';
 import rehypeSlug from 'rehype-slug';
+import { BASE_URL } from '@/lib/constants';
 
 interface BlogPostPageProps {
   params: Promise<{
@@ -42,8 +43,7 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
   }
 
   const { frontmatter } = post;
-  const baseUrl = 'https://denvermc.org';
-  const postUrl = `${baseUrl}/blog/${slug}`;
+  const postUrl = `${BASE_URL}/blog/${slug}`;
 
   return {
     title: frontmatter.title,
@@ -66,13 +66,13 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
             {
               url: frontmatter.image.startsWith('http')
                 ? frontmatter.image
-                : `${baseUrl}${frontmatter.image}`,
+                : `${BASE_URL}${frontmatter.image}`,
               alt: frontmatter.imageAlt || frontmatter.title,
             },
           ]
         : [
             {
-              url: `${baseUrl}/logo-512.png`,
+              url: `${BASE_URL}/logo-512.png`,
               width: 512,
               height: 512,
               alt: 'Denver MeshCore Logo',
@@ -86,8 +86,8 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
       title: frontmatter.title,
       description: frontmatter.description,
       images: frontmatter.image
-        ? [frontmatter.image.startsWith('http') ? frontmatter.image : `${baseUrl}${frontmatter.image}`]
-        : [`${baseUrl}/logo-512.png`],
+        ? [frontmatter.image.startsWith('http') ? frontmatter.image : `${BASE_URL}${frontmatter.image}`]
+        : [`${BASE_URL}/logo-512.png`],
     },
   };
 }
@@ -116,9 +116,9 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
   });
 
   const breadcrumbSchema = generateBreadcrumbSchema([
-    { name: 'Home', url: 'https://denvermc.org' },
-    { name: 'Blog', url: 'https://denvermc.org/blog' },
-    { name: frontmatter.title, url: `https://denvermc.org/blog/${slug}` },
+    { name: 'Home', url: BASE_URL },
+    { name: 'Blog', url: `${BASE_URL}/blog` },
+    { name: frontmatter.title, url: `${BASE_URL}/blog/${slug}` },
   ]);
 
   // Get related posts based on shared tags

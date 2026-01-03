@@ -4,6 +4,7 @@ import JsonLd from '@/components/JsonLd';
 import { generateBreadcrumbSchema } from '@/lib/schemas/breadcrumb';
 import { COLORADO_LOCATIONS } from '@/lib/data/locations';
 import { getCoverageLabel, getCoverageBadgeColor, getCoverageColor } from '@/lib/utils/coverage';
+import { BASE_URL } from '@/lib/constants';
 
 export const metadata: Metadata = {
   title: 'Colorado Mesh Network Coverage | Front Range Cities',
@@ -30,7 +31,7 @@ export const metadata: Metadata = {
     title: 'Colorado Mesh Network Coverage | Denver MeshCore',
     description:
       'Explore MeshCore coverage across the Colorado Front Range. Find nodes in Denver, Boulder, Colorado Springs, and more.',
-    url: 'https://denvermc.com/locations',
+    url: `${BASE_URL}/locations`,
     type: 'website',
   },
   twitter: {
@@ -42,8 +43,8 @@ export const metadata: Metadata = {
 };
 
 const breadcrumbData = generateBreadcrumbSchema([
-  { name: 'Home', url: 'https://denvermc.com' },
-  { name: 'Locations', url: 'https://denvermc.com/locations' },
+  { name: 'Home', url: BASE_URL },
+  { name: 'Locations', url: `${BASE_URL}/locations` },
 ]);
 
 const pageSchema = {
@@ -52,11 +53,11 @@ const pageSchema = {
   name: 'Colorado Mesh Network Coverage',
   description:
     'Explore Colorado mesh network coverage across the Front Range. Find MeshCore nodes in Denver, Boulder, Colorado Springs, and other Front Range cities.',
-  url: 'https://denvermc.com/locations',
+  url: `${BASE_URL}/locations`,
   publisher: {
     '@type': 'Organization',
     name: 'Denver MeshCore',
-    url: 'https://denvermc.com',
+    url: BASE_URL,
   },
   mainEntity: {
     '@type': 'ItemList',
@@ -64,7 +65,7 @@ const pageSchema = {
       '@type': 'ListItem',
       position: index + 1,
       name: `${location.name} Mesh Network`,
-      url: `https://denvermc.com/locations/${location.slug}`,
+      url: `${BASE_URL}/locations/${location.slug}`,
     })),
   },
 };

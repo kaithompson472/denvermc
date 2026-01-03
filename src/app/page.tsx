@@ -2,9 +2,10 @@ import Link from 'next/link';
 import { StatsSection } from '@/components';
 import JsonLd from '@/components/JsonLd';
 import { generateBreadcrumbSchema } from '@/lib/schemas/breadcrumb';
+import { BASE_URL } from '@/lib/constants';
 
 const breadcrumbData = generateBreadcrumbSchema([
-  { name: 'Home', url: 'https://denvermc.com' },
+  { name: 'Home', url: BASE_URL },
 ]);
 
 export default function Home() {

@@ -1,4 +1,5 @@
 import type { Location } from '../data/locations';
+import { BASE_URL } from '../constants';
 
 interface LocalBusinessOptions {
   /** Business name (defaults to "Denver MeshCore") */
@@ -34,9 +35,9 @@ export function generateLocalBusinessSchema(
   const {
     name = 'Denver MeshCore',
     description = `${name} provides decentralized mesh networking infrastructure and community support in ${location.name}, ${location.state}. Join Colorado's growing off-grid communication network.`,
-    url = 'https://denvermc.org',
-    logo = 'https://denvermc.org/logo.png',
-    email = 'hello@denvermc.org',
+    url = BASE_URL,
+    logo = `${BASE_URL}/logo.png`,
+    email = 'hello@denvermc.com',
     businessType = 'Organization',
     sameAs = [
       'https://discord.gg/QpaW8FTTCE',
@@ -98,7 +99,7 @@ export function generatePlaceSchema(
 ) {
   const {
     description = location.description,
-    url = `https://denvermc.org/locations/${location.slug}`,
+    url = `${BASE_URL}/locations/${location.slug}`,
     images = [],
   } = options;
 
@@ -158,7 +159,7 @@ export function generateServiceAreaSchema(
     provider: {
       '@type': 'Organization',
       name: providerName,
-      url: 'https://denvermc.org',
+      url: BASE_URL,
     },
     areaServed: locations.map((location) => ({
       '@type': 'City',

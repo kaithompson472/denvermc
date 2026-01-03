@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { NetworkMapWrapper } from '@/components';
 import JsonLd from '@/components/JsonLd';
 import { generateBreadcrumbSchema } from '@/lib/schemas/breadcrumb';
+import { BASE_URL } from '@/lib/constants';
 
 // Force dynamic rendering to prevent stale cache issues on Netlify
 export const dynamic = 'force-dynamic';
@@ -30,13 +31,13 @@ export const metadata: Metadata = {
     title: 'Network Map | Denver MeshCore',
     description:
       'Interactive map of Denver MeshCore network nodes. View node locations and coverage areas across Colorado.',
-    url: 'https://denvermc.com/map',
+    url: `${BASE_URL}/map`,
   },
 };
 
 const breadcrumbData = generateBreadcrumbSchema([
-  { name: 'Home', url: 'https://denvermc.com' },
-  { name: 'Network Map', url: 'https://denvermc.com/map' },
+  { name: 'Home', url: BASE_URL },
+  { name: 'Network Map', url: `${BASE_URL}/map` },
 ]);
 
 export default function MapPage() {

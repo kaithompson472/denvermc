@@ -1,4 +1,5 @@
 import type { BlogPostFrontmatter } from '../blog';
+import { BASE_URL } from '../constants';
 
 interface BlogPostingSchemaOptions {
   slug: string;
@@ -17,7 +18,7 @@ export function generateBlogPostingSchema({
   frontmatter,
   readingTime,
   wordCount,
-  baseUrl = 'https://denvermc.org',
+  baseUrl = BASE_URL,
 }: BlogPostingSchemaOptions) {
   const postUrl = `${baseUrl}/blog/${slug}`;
 
@@ -73,7 +74,7 @@ export function generateBlogPostingSchema({
  * Generate JSON-LD Blog schema for the blog listing page
  * @see https://schema.org/Blog
  */
-export function generateBlogSchema(baseUrl = 'https://denvermc.org') {
+export function generateBlogSchema(baseUrl = BASE_URL) {
   return {
     '@context': 'https://schema.org',
     '@type': 'Blog',
@@ -99,7 +100,7 @@ export function generateArticleSchema({
   frontmatter,
   readingTime,
   wordCount,
-  baseUrl = 'https://denvermc.org',
+  baseUrl = BASE_URL,
 }: BlogPostingSchemaOptions) {
   const schema = generateBlogPostingSchema({
     slug,

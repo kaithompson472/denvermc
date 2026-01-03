@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import JsonLd from '@/components/JsonLd';
 import { generateBreadcrumbSchema } from '@/lib/schemas/breadcrumb';
+import { BASE_URL } from '@/lib/constants';
 
 export const metadata: Metadata = {
   title: 'About',
@@ -14,13 +15,13 @@ export const metadata: Metadata = {
     title: 'About Denver MeshCore',
     description:
       "Learn about MeshCore technology and the Denver mesh networking community building Colorado's decentralized communication network.",
-    url: 'https://denvermc.com/about',
+    url: `${BASE_URL}/about`,
   },
 };
 
 const breadcrumbData = generateBreadcrumbSchema([
-  { name: 'Home', url: 'https://denvermc.com' },
-  { name: 'About', url: 'https://denvermc.com/about' },
+  { name: 'Home', url: BASE_URL },
+  { name: 'About', url: `${BASE_URL}/about` },
 ]);
 
 export default function AboutPage() {
