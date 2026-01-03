@@ -1,12 +1,29 @@
+import { BASE_URL } from '@/lib/constants';
+
 interface JsonLdProps {
   data: Record<string, unknown>;
 }
 
+/**
+ * Sanitizes JSON string for safe use in dangerouslySetInnerHTML.
+ * Escapes <, >, and & characters to prevent XSS attacks.
+ * This prevents injection of </script> tags or other HTML entities.
+ */
+function sanitizeJsonLd(json: string): string {
+  return json
+    .replace(/&/g, '\\u0026')
+    .replace(/</g, '\\u003c')
+    .replace(/>/g, '\\u003e');
+}
+
 export default function JsonLd({ data }: JsonLdProps) {
+  const jsonString = JSON.stringify(data);
+  const sanitizedJson = sanitizeJsonLd(jsonString);
+
   return (
     <script
       type="application/ld+json"
-      dangerouslySetInnerHTML={{ __html: JSON.stringify(data) }}
+      dangerouslySetInnerHTML={{ __html: sanitizedJson }}
     />
   );
 }
@@ -15,11 +32,11 @@ export default function JsonLd({ data }: JsonLdProps) {
 export const organizationSchema = {
   '@context': 'https://schema.org',
   '@type': 'Organization',
-  '@id': 'https://denvermc.com/#organization',
+  '@id': `${BASE_URL}/#organization`,
   name: 'Denver MeshCore Community',
   alternateName: 'Denver MeshCore',
-  url: 'https://denvermc.com',
-  logo: 'https://denvermc.com/logo-512.png',
+  url: BASE_URL,
+  logo: `${BASE_URL}/logo-512.png`,
   description:
     'A community-driven initiative building a decentralized mesh network across the Colorado Front Range using LoRa technology for off-grid communication.',
   foundingLocation: {
@@ -61,15 +78,15 @@ export const organizationSchema = {
 export const websiteSchema = {
   '@context': 'https://schema.org',
   '@type': 'WebSite',
-  '@id': 'https://denvermc.com/#website',
+  '@id': `${BASE_URL}/#website`,
   name: 'Denver MeshCore Community Platform',
   alternateName: 'Denver MeshCore',
-  url: 'https://denvermc.com',
+  url: BASE_URL,
   description:
     "Building Colorado's decentralized mesh network community. Connect off-grid using LoRa technology across the Front Range.",
   publisher: {
     '@type': 'Organization',
-    '@id': 'https://denvermc.com/#organization',
+    '@id': `${BASE_URL}/#organization`,
   },
   inLanguage: 'en-US',
 };
@@ -78,12 +95,12 @@ export const websiteSchema = {
 export const communityOrganizationSchema = {
   '@context': 'https://schema.org',
   '@type': 'CommunityOrganization',
-  '@id': 'https://denvermc.com/#community',
+  '@id': `${BASE_URL}/#community`,
   name: 'Denver MeshCore Community',
   alternateName: 'Denver MeshCore',
-  url: 'https://denvermc.com',
-  logo: 'https://denvermc.com/logo-512.png',
-  image: 'https://denvermc.com/logo-512.png',
+  url: BASE_URL,
+  logo: `${BASE_URL}/logo-512.png`,
+  image: `${BASE_URL}/logo-512.png`,
   description:
     'A grassroots community building a resilient, decentralized mesh network across the Colorado Front Range for off-grid and emergency communication.',
   address: {
