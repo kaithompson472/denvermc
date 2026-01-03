@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import JsonLd from '@/components/JsonLd';
 import { generateBreadcrumbSchema } from '@/lib/schemas/breadcrumb';
+import { generateFAQSchema } from '@/lib/schemas/faq';
 
 export const metadata: Metadata = {
   title: 'Why MeshCore?',
@@ -25,12 +26,67 @@ export const metadata: Metadata = {
       'Faster messaging, better battery life, and city-scale reliability. Discover why MeshCore is the choice for serious mesh networking.',
     url: 'https://denvermc.com/why-meshcore',
   },
+  twitter: {
+    card: 'summary_large_image',
+    site: '@denver_meshcore',
+    creator: '@denver_meshcore',
+    title: 'Why MeshCore? | Denver MeshCore',
+    description:
+      'Faster messaging, better battery life, and city-scale reliability. Discover why MeshCore is the choice for serious mesh networking.',
+    images: ['/logo-512.png'],
+  },
 };
 
 const breadcrumbData = generateBreadcrumbSchema([
   { name: 'Home', url: 'https://denvermc.com' },
   { name: 'Why MeshCore?', url: 'https://denvermc.com/why-meshcore' },
 ]);
+
+// FAQ data for MeshCore vs Meshtastic comparison questions
+const whyMeshCoreFAQData = [
+  {
+    question: 'What is the difference between MeshCore and Meshtastic?',
+    answer:
+      'MeshCore and Meshtastic are both LoRa mesh networking protocols but with different design philosophies. MeshCore uses dedicated repeaters for routing while client devices stay quiet, reducing network congestion. Meshtastic uses a flooding approach where all nodes can relay messages. MeshCore supports up to 64 hops versus Meshtastic\'s 7 hops, making it better suited for city-scale infrastructure networks. Meshtastic has a larger community (~40,000+ users) while MeshCore is growing (~3,500+ users).',
+  },
+  {
+    question: 'Why does MeshCore support 64 hops while Meshtastic only supports 7?',
+    answer:
+      'MeshCore\'s 64-hop limit versus Meshtastic\'s 7-hop limit comes from their different routing architectures. Meshtastic uses flooding where every node rebroadcasts, so limiting hops prevents exponential message multiplication. MeshCore uses intelligent repeater-based routing where only dedicated repeaters relay messages, allowing much longer routes without network saturation. This makes MeshCore ideal for spanning cities and regions.',
+  },
+  {
+    question: 'Does MeshCore have better battery life than Meshtastic?',
+    answer:
+      'Yes, MeshCore typically offers better battery life for edge devices because only dedicated repeaters relay messages. In Meshtastic, every node rebroadcasts all messages, consuming more power. MeshCore\'s "repeaters route, edge nodes don\'t pollute" philosophy means companion devices use significantly less power, making it ideal for solar-powered installations and portable use.',
+  },
+  {
+    question: 'How does MeshCore reduce network congestion compared to Meshtastic?',
+    answer:
+      'MeshCore reduces congestion by separating device roles: Companion devices connect via Bluetooth to phones and don\'t relay traffic, while dedicated Repeaters handle all routing. Meshtastic uses flooding where all nodes rebroadcast messages by default. This means MeshCore networks have more available airtime for actual communication, especially as the network grows larger.',
+  },
+  {
+    question: 'Which is better for emergency communication: MeshCore or Meshtastic?',
+    answer:
+      'Both work for emergency communication, but they excel in different scenarios. MeshCore is better for planned infrastructure networks with fixed repeaters providing reliable city-wide coverage. Meshtastic excels for ad-hoc mobile groups where everyone brings a radio. For community emergency preparedness with pre-deployed repeater infrastructure, MeshCore\'s reliability and range make it the stronger choice.',
+  },
+  {
+    question: 'Can MeshCore and Meshtastic devices communicate with each other?',
+    answer:
+      'No, MeshCore and Meshtastic use different protocols and cannot communicate with each other directly. They are separate mesh networks even if using similar LoRa hardware. You need to choose one protocol for your network. Some communities run both networks in parallel for different use cases.',
+  },
+  {
+    question: 'How fast is messaging on MeshCore compared to Meshtastic?',
+    answer:
+      'MeshCore typically delivers messages faster with sub-second delivery for nearby nodes and sub-2-second responses across 9-hop routes. Meshtastic message speed is more variable, especially on congested networks with many nodes broadcasting. MeshCore\'s optimized bandwidth settings and reduced traffic from non-repeater nodes contribute to faster, more consistent message delivery.',
+  },
+  {
+    question: 'What encryption does MeshCore use compared to Meshtastic?',
+    answer:
+      'MeshCore supports AES-256-GCM and ChaCha20-Poly1305 encryption with identity attestation and key control. Meshtastic uses AES-256 encryption. Both provide strong encryption for secure communication. MeshCore\'s Room Servers also enable encrypted group messaging for persistent chat rooms.',
+  },
+];
+
+const faqData = generateFAQSchema(whyMeshCoreFAQData);
 
 const keyAdvantages = [
   {
@@ -208,6 +264,7 @@ export default function WhyMeshCorePage() {
   return (
     <>
       <JsonLd data={breadcrumbData} />
+      <JsonLd data={faqData} />
       <div className="min-h-screen bg-mesh">
         {/* Hero Section */}
         <section className="px-6 py-16 md:py-24 text-center">
