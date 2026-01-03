@@ -3,6 +3,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { getAllPosts, getAllTags, getPostsByTag, type BlogPostMeta } from '@/lib/blog';
 import JsonLd from '@/components/JsonLd';
+import { BASE_URL } from '@/lib/constants';
 
 // Number of posts per page
 const POSTS_PER_PAGE = 6;
@@ -42,11 +43,11 @@ function generateBlogListSchema(posts: BlogPostMeta[]) {
     name: 'Denver MeshCore Blog',
     description:
       'News, tutorials, and updates from the Denver MeshCore community',
-    url: 'https://denvermc.com/blog',
+    url: `${BASE_URL}/blog`,
     publisher: {
       '@type': 'Organization',
       name: 'Denver MeshCore',
-      url: 'https://denvermc.com',
+      url: BASE_URL,
     },
     blogPost: posts.slice(0, 10).map((post) => ({
       '@type': 'BlogPosting',
@@ -57,14 +58,21 @@ function generateBlogListSchema(posts: BlogPostMeta[]) {
         '@type': 'Person',
         name: post.frontmatter.author,
       },
-      url: `https://denvermc.com/blog/${post.slug}`,
+      url: `${BASE_URL}/blog/${post.slug}`,
     })),
   };
 }
 
-// Format date for display
+// Format date for display with error handling
 function formatDate(dateString: string): string {
   const date = new Date(dateString);
+
+  // Check if the date is valid
+  if (isNaN(date.getTime())) {
+    console.warn(`Invalid date string: "${dateString}"`);
+    return 'Unknown date';
+  }
+
   return date.toLocaleDateString('en-US', {
     year: 'numeric',
     month: 'long',

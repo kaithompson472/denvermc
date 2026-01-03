@@ -42,6 +42,71 @@ export interface BlogPostMeta {
 const POSTS_DIRECTORY = path.join(process.cwd(), 'content/blog');
 
 /**
+ * Validate frontmatter has required fields
+ * Returns validated frontmatter or null if invalid
+ */
+function validateFrontmatter(
+  data: Record<string, unknown>,
+  slug: string
+): BlogPostFrontmatter | null {
+  const requiredFields = ['title', 'description', 'date', 'author'] as const;
+  const missingFields: string[] = [];
+
+  for (const field of requiredFields) {
+    if (typeof data[field] !== 'string' || data[field] === '') {
+      missingFields.push(field);
+    }
+  }
+
+  if (missingFields.length > 0) {
+    console.warn(
+      `Blog post "${slug}" is missing required frontmatter fields: ${missingFields.join(', ')}`
+    );
+    return null;
+  }
+
+  // Validate date format
+  const dateValue = data.date as string;
+  const parsedDate = new Date(dateValue);
+  if (isNaN(parsedDate.getTime())) {
+    console.warn(
+      `Blog post "${slug}" has invalid date format: "${dateValue}"`
+    );
+    return null;
+  }
+
+  // Validate optional fields types
+  if (data.tags !== undefined && !Array.isArray(data.tags)) {
+    console.warn(
+      `Blog post "${slug}" has invalid tags (expected array): ${typeof data.tags}`
+    );
+    data.tags = undefined;
+  }
+
+  if (data.published !== undefined && typeof data.published !== 'boolean') {
+    console.warn(
+      `Blog post "${slug}" has invalid published value (expected boolean): ${typeof data.published}`
+    );
+    data.published = undefined;
+  }
+
+  return {
+    title: data.title as string,
+    description: data.description as string,
+    date: data.date as string,
+    author: data.author as string,
+    authorUrl: typeof data.authorUrl === 'string' ? data.authorUrl : undefined,
+    image: typeof data.image === 'string' ? data.image : undefined,
+    imageAlt: typeof data.imageAlt === 'string' ? data.imageAlt : undefined,
+    tags: Array.isArray(data.tags)
+      ? data.tags.filter((t): t is string => typeof t === 'string')
+      : undefined,
+    published:
+      typeof data.published === 'boolean' ? data.published : undefined,
+  };
+}
+
+/**
  * Get all blog post slugs from the content directory
  */
 export function getPostSlugs(): string[] {
@@ -73,9 +138,18 @@ export function getPostBySlug(slug: string): BlogPost | null {
     const { data, content } = matter(fileContents);
     const stats = readingTime(content);
 
+    // Validate frontmatter before type assertion
+    const frontmatter = validateFrontmatter(
+      data as Record<string, unknown>,
+      slug
+    );
+    if (!frontmatter) {
+      return null;
+    }
+
     return {
       slug,
-      frontmatter: data as BlogPostFrontmatter,
+      frontmatter,
       content,
       readingTime: stats.text,
       wordCount: stats.words,
