@@ -84,6 +84,15 @@ export const metadata: Metadata = {
       },
     ],
   },
+  twitter: {
+    card: "summary_large_image",
+    site: "@denver_meshcore",
+    creator: "@denver_meshcore",
+    title: "Denver MeshCore Community Platform",
+    description:
+      "Building Colorado's decentralized mesh network community. Connect off-grid using LoRa technology across the Front Range.",
+    images: ["/logo-512.png"],
+  },
   category: "technology",
 };
 
