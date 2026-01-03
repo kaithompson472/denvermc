@@ -245,10 +245,24 @@ const faqs = [
   },
 ];
 
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((faq) => ({
+    '@type': 'Question',
+    name: faq.question,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: faq.answer,
+    },
+  })),
+};
+
 export default function OffGridCommunicationPage() {
   return (
     <>
       <JsonLd data={breadcrumbData} />
+      <JsonLd data={faqSchema} />
       <div className="min-h-screen bg-mesh">
         {/* Hero Section */}
         <section className="px-6 py-16 md:py-24 text-center bg-mountain-gradient text-white">
