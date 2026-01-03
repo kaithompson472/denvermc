@@ -1,38 +1,24 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
-import { getPostBySlug, getPostSlugs, getRelatedPosts } from '@/lib/blog';
-import { generateBlogPostingSchema } from '@/lib/schemas/blog';
-import { generateBreadcrumbSchema } from '@/lib/schemas/breadcrumb';
+import { getPostBySlug, getPostSlugs } from '@/lib/blog';
+import { generateBlogPostSchema } from '@/lib/schemas/blog';
+import { BASE_URL } from '@/lib/constants';
 import JsonLd from '@/components/JsonLd';
-import { MDXRemote } from 'next-mdx-remote/rsc';
-import { useMDXComponents } from '../../../../mdx-components';
+import { compileMDX } from 'next-mdx-remote/rsc';
 import remarkGfm from 'remark-gfm';
 import rehypeSlug from 'rehype-slug';
-import { BASE_URL } from '@/lib/constants';
 
-interface BlogPostPageProps {
-  params: Promise<{
-    slug: string;
-  }>;
+interface PageProps {
+  params: Promise<{ slug: string }>;
 }
 
-/**
- * Generate static params for all published blog posts
- * This enables static generation at build time
- */
 export async function generateStaticParams() {
   const slugs = getPostSlugs();
-  return slugs.map((slug) => ({
-    slug,
-  }));
+  return slugs.map((slug) => ({ slug }));
 }
 
-/**
- * Generate dynamic metadata for each blog post
- * Includes OpenGraph, Twitter cards, and SEO metadata
- */
-export async function generateMetadata({ params }: BlogPostPageProps): Promise<Metadata> {
+export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug } = await params;
   const post = getPostBySlug(slug);
 
@@ -42,135 +28,108 @@ export async function generateMetadata({ params }: BlogPostPageProps): Promise<M
     };
   }
 
-  const { frontmatter } = post;
-  const postUrl = `${BASE_URL}/blog/${slug}`;
-
   return {
-    title: frontmatter.title,
-    description: frontmatter.description,
-    keywords: frontmatter.tags,
-    authors: [{ name: frontmatter.author, url: frontmatter.authorUrl }],
+    title: post.title,
+    description: post.excerpt,
+    authors: [{ name: post.author }],
     alternates: {
-      canonical: `/blog/${slug}`,
+      canonical: `${BASE_URL}/blog/${slug}`,
     },
     openGraph: {
-      title: frontmatter.title,
-      description: frontmatter.description,
+      title: post.title,
+      description: post.excerpt,
       type: 'article',
-      url: postUrl,
-      publishedTime: frontmatter.date,
-      authors: [frontmatter.author],
-      tags: frontmatter.tags,
-      images: frontmatter.image
-        ? [
-            {
-              url: frontmatter.image.startsWith('http')
-                ? frontmatter.image
-                : `${BASE_URL}${frontmatter.image}`,
-              alt: frontmatter.imageAlt || frontmatter.title,
-            },
-          ]
-        : [
-            {
-              url: `${BASE_URL}/logo-512.png`,
-              width: 512,
-              height: 512,
-              alt: 'Denver MeshCore Logo',
-            },
-          ],
+      publishedTime: post.date,
+      authors: [post.author],
+      url: `${BASE_URL}/blog/${slug}`,
     },
     twitter: {
       card: 'summary_large_image',
-      site: '@denver_meshcore',
-      creator: '@denver_meshcore',
-      title: frontmatter.title,
-      description: frontmatter.description,
-      images: frontmatter.image
-        ? [frontmatter.image.startsWith('http') ? frontmatter.image : `${BASE_URL}${frontmatter.image}`]
-        : [`${BASE_URL}/logo-512.png`],
+      title: post.title,
+      description: post.excerpt,
     },
   };
 }
 
-export default async function BlogPostPage({ params }: BlogPostPageProps) {
+function formatDate(dateString: string): string {
+  try {
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) {
+      return 'Unknown date';
+    }
+    return date.toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric',
+    });
+  } catch {
+    return 'Unknown date';
+  }
+}
+
+export default async function BlogPostPage({ params }: PageProps) {
   const { slug } = await params;
   const post = getPostBySlug(slug);
 
-  if (!post) {
+  if (!post || !post.published) {
     notFound();
   }
 
-  // Check if post is unpublished
-  if (post.frontmatter.published === false) {
-    notFound();
-  }
-
-  const { frontmatter, content, readingTime, wordCount } = post;
-
-  // Generate schemas for SEO
-  const blogPostingSchema = generateBlogPostingSchema({
-    slug,
-    frontmatter,
-    readingTime,
-    wordCount,
+  const { content } = await compileMDX({
+    source: post.content,
+    options: {
+      mdxOptions: {
+        remarkPlugins: [remarkGfm],
+        rehypePlugins: [rehypeSlug],
+      },
+    },
   });
 
-  const breadcrumbSchema = generateBreadcrumbSchema([
-    { name: 'Home', url: BASE_URL },
-    { name: 'Blog', url: `${BASE_URL}/blog` },
-    { name: frontmatter.title, url: `${BASE_URL}/blog/${slug}` },
-  ]);
-
-  // Get related posts based on shared tags
-  const relatedPosts = getRelatedPosts(slug, 3);
-
-  // Format the date nicely
-  const formattedDate = new Date(frontmatter.date).toLocaleDateString('en-US', {
-    year: 'numeric',
-    month: 'long',
-    day: 'numeric',
+  const blogPostSchema = generateBlogPostSchema({
+    title: post.title,
+    excerpt: post.excerpt,
+    date: post.date,
+    author: post.author,
+    slug: post.slug,
   });
-
-  // Get MDX components
-  const components = useMDXComponents({});
 
   return (
     <>
-      <JsonLd data={blogPostingSchema} />
-      <JsonLd data={breadcrumbSchema} />
+      <JsonLd data={blogPostSchema} />
 
-      <article className="min-h-screen bg-mesh">
-        {/* Hero Section with Featured Image */}
-        <header className="px-6 py-12 md:py-20 bg-background-secondary">
-          <div className="max-w-4xl mx-auto">
-            {/* Breadcrumb */}
-            <nav className="mb-6" aria-label="Breadcrumb">
-              <ol className="flex items-center gap-2 text-sm text-foreground-muted">
-                <li>
-                  <Link href="/" className="hover:text-mesh transition-colors">
-                    Home
-                  </Link>
-                </li>
-                <li aria-hidden="true">/</li>
-                <li>
-                  <Link href="/blog" className="hover:text-mesh transition-colors">
-                    Blog
-                  </Link>
-                </li>
-                <li aria-hidden="true">/</li>
-                <li className="text-foreground truncate max-w-[200px]" aria-current="page">
-                  {frontmatter.title}
-                </li>
-              </ol>
-            </nav>
+      <article className="min-h-screen bg-background">
+        {/* Header */}
+        <header className="relative py-16 sm:py-24 overflow-hidden">
+          <div className="absolute inset-0 bg-gradient-to-b from-mesh/5 to-transparent" />
+          <div className="relative mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
+            {/* Back link */}
+            <Link
+              href="/blog"
+              className="inline-flex items-center text-mesh hover:text-mesh/80 mb-8 transition-colors"
+            >
+              <svg
+                className="w-4 h-4 mr-2"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 19l-7-7 7-7"
+                />
+              </svg>
+              Back to Blog
+            </Link>
 
             {/* Tags */}
-            {frontmatter.tags && frontmatter.tags.length > 0 && (
+            {post.tags.length > 0 && (
               <div className="flex flex-wrap gap-2 mb-4">
-                {frontmatter.tags.map((tag) => (
+                {post.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="text-xs font-medium px-2.5 py-1 rounded-full bg-mesh/10 text-mesh"
+                    className="px-3 py-1 bg-mesh/10 text-mesh rounded-full text-sm"
                   >
                     {tag}
                   </span>
@@ -179,213 +138,47 @@ export default async function BlogPostPage({ params }: BlogPostPageProps) {
             )}
 
             {/* Title */}
-            <h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-foreground mb-4 leading-tight">
-              {frontmatter.title}
+            <h1 className="text-3xl sm:text-4xl lg:text-5xl font-bold text-foreground mb-6">
+              {post.title}
             </h1>
 
-            {/* Description */}
-            <p className="text-lg md:text-xl text-foreground-muted mb-6 max-w-3xl">
-              {frontmatter.description}
-            </p>
-
-            {/* Meta information */}
-            <div className="flex flex-wrap items-center gap-4 text-sm text-foreground-muted">
-              {/* Author */}
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-full bg-mesh/20 flex items-center justify-center">
-                  <span className="text-mesh font-semibold text-sm">
-                    {frontmatter.author.charAt(0).toUpperCase()}
-                  </span>
-                </div>
-                {frontmatter.authorUrl ? (
-                  <a
-                    href={frontmatter.authorUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="font-medium text-foreground hover:text-mesh transition-colors"
-                  >
-                    {frontmatter.author}
-                  </a>
-                ) : (
-                  <span className="font-medium text-foreground">{frontmatter.author}</span>
-                )}
-              </div>
-
-              <span aria-hidden="true" className="text-card-border">
-                |
-              </span>
-
-              {/* Date */}
-              <time dateTime={frontmatter.date} className="flex items-center gap-1.5">
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
-                  />
-                </svg>
-                {formattedDate}
-              </time>
-
-              <span aria-hidden="true" className="text-card-border">
-                |
-              </span>
-
-              {/* Reading time */}
-              <span className="flex items-center gap-1.5">
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                  aria-hidden="true"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
-                  />
-                </svg>
-                {readingTime}
-              </span>
+            {/* Meta */}
+            <div className="flex flex-wrap items-center gap-4 text-foreground-muted">
+              <span className="font-medium text-foreground">{post.author}</span>
+              <span>&middot;</span>
+              <time dateTime={post.date}>{formatDate(post.date)}</time>
+              <span>&middot;</span>
+              <span>{post.readingTime}</span>
             </div>
           </div>
         </header>
 
-        {/* Featured Image */}
-        {frontmatter.image && (
-          <div className="px-6 -mt-4 mb-8">
-            <div className="max-w-4xl mx-auto">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={frontmatter.image}
-                alt={frontmatter.imageAlt || frontmatter.title}
-                className="w-full h-auto rounded-xl shadow-lg"
-                loading="eager"
-              />
-            </div>
-          </div>
-        )}
-
-        {/* Article Content */}
-        <div className="px-6 py-8 md:py-12">
-          <div className="max-w-4xl mx-auto">
-            <div className="prose prose-lg dark:prose-invert max-w-none">
-              <MDXRemote
-                source={content}
-                components={components}
-                options={{
-                  mdxOptions: {
-                    remarkPlugins: [remarkGfm],
-                    rehypePlugins: [rehypeSlug],
-                  },
-                }}
-              />
-            </div>
+        {/* Content */}
+        <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 pb-16">
+          <div className="prose prose-lg max-w-none">
+            {content}
           </div>
         </div>
 
-        {/* Author Bio / CTA Section */}
-        <section className="px-6 py-12 bg-background-secondary">
-          <div className="max-w-4xl mx-auto">
-            <div className="card-mesh p-6 md:p-8">
-              <div className="flex flex-col md:flex-row gap-6 items-start">
-                <div className="w-16 h-16 rounded-full bg-mesh/20 flex items-center justify-center flex-shrink-0">
-                  <span className="text-mesh font-bold text-2xl">
-                    {frontmatter.author.charAt(0).toUpperCase()}
-                  </span>
-                </div>
-                <div className="flex-1">
-                  <h2 className="text-lg font-bold text-foreground mb-2">
-                    Written by {frontmatter.author}
-                  </h2>
-                  <p className="text-foreground-muted mb-4">
-                    Thanks for reading! Join our community to discuss this article and connect with
-                    other mesh networking enthusiasts.
-                  </p>
-                  <div className="flex flex-wrap gap-3">
-                    <a
-                      href="https://discord.gg/QpaW8FTTCE"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="btn-primary text-sm"
-                    >
-                      Join Discord
-                    </a>
-                    <Link href="/start" className="btn-outline text-sm">
-                      Get Started with MeshCore
-                    </Link>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </section>
-
-        {/* Related Posts */}
-        {relatedPosts.length > 0 && (
-          <section className="px-6 py-12">
-            <div className="max-w-4xl mx-auto">
-              <h2 className="text-2xl font-bold text-foreground mb-6">Related Articles</h2>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                {relatedPosts.map((relatedPost) => (
-                  <Link
-                    key={relatedPost.slug}
-                    href={`/blog/${relatedPost.slug}`}
-                    className="card-mesh p-4 hover:border-mesh transition-colors group"
-                  >
-                    <h3 className="font-semibold text-foreground group-hover:text-mesh transition-colors mb-2 line-clamp-2">
-                      {relatedPost.frontmatter.title}
-                    </h3>
-                    <p className="text-sm text-foreground-muted line-clamp-2 mb-3">
-                      {relatedPost.frontmatter.description}
-                    </p>
-                    <div className="flex items-center justify-between text-xs text-foreground-muted">
-                      <span>{relatedPost.readingTime}</span>
-                      <span className="text-mesh group-hover:translate-x-1 transition-transform">
-                        Read more &rarr;
-                      </span>
-                    </div>
-                  </Link>
-                ))}
-              </div>
-            </div>
-          </section>
-        )}
-
-        {/* Back to Blog CTA */}
-        <section className="px-6 py-8 border-t border-card-border">
-          <div className="max-w-4xl mx-auto flex justify-center">
-            <Link
-              href="/blog"
-              className="inline-flex items-center gap-2 text-foreground-muted hover:text-mesh transition-colors"
+        {/* Footer */}
+        <footer className="border-t border-border py-12">
+          <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8 text-center">
+            <p className="text-foreground-muted mb-4">
+              Have questions or want to discuss this topic?
+            </p>
+            <a
+              href="https://discord.gg/QpaW8FTTCE"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="btn-accent inline-flex items-center gap-2"
             >
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-                aria-hidden="true"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M10 19l-7-7m0 0l7-7m-7 7h18"
-                />
+              <svg className="w-5 h-5" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M20.317 4.37a19.791 19.791 0 0 0-4.885-1.515.074.074 0 0 0-.079.037c-.21.375-.444.864-.608 1.25a18.27 18.27 0 0 0-5.487 0 12.64 12.64 0 0 0-.617-1.25.077.077 0 0 0-.079-.037A19.736 19.736 0 0 0 3.677 4.37a.07.07 0 0 0-.032.027C.533 9.046-.32 13.58.099 18.057a.082.082 0 0 0 .031.057 19.9 19.9 0 0 0 5.993 3.03.078.078 0 0 0 .084-.028 14.09 14.09 0 0 0 1.226-1.994.076.076 0 0 0-.041-.106 13.107 13.107 0 0 1-1.872-.892.077.077 0 0 1-.008-.128 10.2 10.2 0 0 0 .372-.292.074.074 0 0 1 .077-.01c3.928 1.793 8.18 1.793 12.062 0a.074.074 0 0 1 .078.01c.12.098.246.198.373.292a.077.077 0 0 1-.006.127 12.299 12.299 0 0 1-1.873.892.077.077 0 0 0-.041.107c.36.698.772 1.362 1.225 1.993a.076.076 0 0 0 .084.028 19.839 19.839 0 0 0 6.002-3.03.077.077 0 0 0 .032-.054c.5-5.177-.838-9.674-3.549-13.66a.061.061 0 0 0-.031-.03zM8.02 15.33c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.956-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.956 2.418-2.157 2.418zm7.975 0c-1.183 0-2.157-1.085-2.157-2.419 0-1.333.955-2.419 2.157-2.419 1.21 0 2.176 1.096 2.157 2.42 0 1.333-.946 2.418-2.157 2.418z" />
               </svg>
-              Back to all articles
-            </Link>
+              Join the Discussion on Discord
+            </a>
           </div>
-        </section>
+        </footer>
       </article>
     </>
   );

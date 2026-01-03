@@ -370,7 +370,7 @@ export default function StartPage() {
                 href="https://www.seeedstudio.com/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-4 py-2 bg-mesh/10 hover:bg-mesh/20 text-mesh rounded-lg transition-colors font-medium"
+                className="px-4 py-2 bg-mountain-500/10 hover:bg-mountain-500/20 text-mountain-500 rounded-lg transition-colors font-medium"
               >
                 Seeed Studio
               </a>
@@ -378,25 +378,33 @@ export default function StartPage() {
                 href="https://store.rakwireless.com/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-4 py-2 bg-mountain-500/10 hover:bg-mountain-500/20 text-mountain-500 rounded-lg transition-colors font-medium"
-              >
-                RAK Wireless Store
-              </a>
-              <a
-                href="https://muzi.works/"
-                target="_blank"
-                rel="noopener noreferrer"
                 className="px-4 py-2 bg-forest-500/10 hover:bg-forest-500/20 text-forest-500 rounded-lg transition-colors font-medium"
               >
-                Muzi Works
+                RAK Wireless Store
               </a>
               <a
                 href="https://store.rokland.com/"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-4 py-2 bg-sunset-500/10 hover:bg-sunset-500/20 text-sunset-500 rounded-lg transition-colors font-medium"
+                className="px-4 py-2 bg-mountain-500/10 hover:bg-mountain-500/20 text-mountain-500 rounded-lg transition-colors font-medium"
               >
                 Rokland
+              </a>
+              <a
+                href="https://muzi.works/"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-4 py-2 bg-sunset-500/10 hover:bg-sunset-500/20 text-sunset-500 rounded-lg transition-colors font-medium"
+              >
+                Muzi Works
+              </a>
+              <a
+                href="https://www.etsy.com/shop/PeakMesh"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="px-4 py-2 bg-mesh/10 hover:bg-mesh/20 text-mesh rounded-lg transition-colors font-medium"
+              >
+                PeakMesh
               </a>
             </div>
             <p className="text-center text-foreground-muted mt-4 text-sm">

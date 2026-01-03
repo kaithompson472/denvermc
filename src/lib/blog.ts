@@ -1,121 +1,90 @@
 import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
-import readingTime from 'reading-time';
 
-/**
- * Blog post frontmatter interface
- */
-export interface BlogPostFrontmatter {
-  title: string;
-  description: string;
-  date: string;
-  author: string;
-  authorUrl?: string;
-  image?: string;
-  imageAlt?: string;
-  tags?: string[];
-  published?: boolean;
-}
+const postsDirectory = path.join(process.cwd(), 'src/content/blog');
 
-/**
- * Full blog post with content and computed fields
- */
 export interface BlogPost {
   slug: string;
-  frontmatter: BlogPostFrontmatter;
+  title: string;
+  date: string;
+  excerpt: string;
+  author: string;
+  tags: string[];
+  published: boolean;
   content: string;
   readingTime: string;
-  wordCount: number;
 }
 
-/**
- * Blog post metadata (without content, for listing pages)
- */
 export interface BlogPostMeta {
   slug: string;
-  frontmatter: BlogPostFrontmatter;
+  title: string;
+  date: string;
+  excerpt: string;
+  author: string;
+  tags: string[];
   readingTime: string;
 }
 
-// Posts directory path
-const POSTS_DIRECTORY = path.join(process.cwd(), 'content/blog');
+/**
+ * Calculate reading time for content
+ */
+function calculateReadingTime(content: string): string {
+  const wordsPerMinute = 200;
+  const words = content.trim().split(/\s+/).length;
+  const minutes = Math.ceil(words / wordsPerMinute);
+  return `${minutes} min read`;
+}
 
 /**
- * Validate frontmatter has required fields
- * Returns validated frontmatter or null if invalid
+ * Validate frontmatter data
  */
-function validateFrontmatter(
-  data: Record<string, unknown>,
-  slug: string
-): BlogPostFrontmatter | null {
-  const requiredFields = ['title', 'description', 'date', 'author'] as const;
-  const missingFields: string[] = [];
-
-  for (const field of requiredFields) {
-    if (typeof data[field] !== 'string' || data[field] === '') {
-      missingFields.push(field);
-    }
+function validateFrontmatter(data: Record<string, unknown>, slug: string): boolean {
+  if (!data.title || typeof data.title !== 'string') {
+    console.warn(`Blog post "${slug}" missing valid title`);
+    return false;
   }
-
-  if (missingFields.length > 0) {
-    console.warn(
-      `Blog post "${slug}" is missing required frontmatter fields: ${missingFields.join(', ')}`
-    );
-    return null;
+  if (!data.date) {
+    console.warn(`Blog post "${slug}" missing date`);
+    return false;
+  }
+  if (!data.excerpt || typeof data.excerpt !== 'string') {
+    console.warn(`Blog post "${slug}" missing valid excerpt`);
+    return false;
   }
 
   // Validate date format
-  const dateValue = data.date as string;
-  const parsedDate = new Date(dateValue);
-  if (isNaN(parsedDate.getTime())) {
-    console.warn(
-      `Blog post "${slug}" has invalid date format: "${dateValue}"`
-    );
-    return null;
+  const dateValue = new Date(data.date as string);
+  if (isNaN(dateValue.getTime())) {
+    console.warn(`Blog post "${slug}" has invalid date format`);
+    return false;
   }
 
-  // Validate optional fields types
-  if (data.tags !== undefined && !Array.isArray(data.tags)) {
-    console.warn(
-      `Blog post "${slug}" has invalid tags (expected array): ${typeof data.tags}`
-    );
-    data.tags = undefined;
+  // Validate tags if present
+  if (data.tags && !Array.isArray(data.tags)) {
+    console.warn(`Blog post "${slug}" has invalid tags format`);
+    return false;
   }
 
+  // Validate published if present
   if (data.published !== undefined && typeof data.published !== 'boolean') {
-    console.warn(
-      `Blog post "${slug}" has invalid published value (expected boolean): ${typeof data.published}`
-    );
-    data.published = undefined;
+    console.warn(`Blog post "${slug}" has invalid published format`);
+    return false;
   }
 
-  return {
-    title: data.title as string,
-    description: data.description as string,
-    date: data.date as string,
-    author: data.author as string,
-    authorUrl: typeof data.authorUrl === 'string' ? data.authorUrl : undefined,
-    image: typeof data.image === 'string' ? data.image : undefined,
-    imageAlt: typeof data.imageAlt === 'string' ? data.imageAlt : undefined,
-    tags: Array.isArray(data.tags)
-      ? data.tags.filter((t): t is string => typeof t === 'string')
-      : undefined,
-    published:
-      typeof data.published === 'boolean' ? data.published : undefined,
-  };
+  return true;
 }
 
 /**
- * Get all blog post slugs from the content directory
+ * Get all post slugs for static generation
  */
 export function getPostSlugs(): string[] {
   try {
-    if (!fs.existsSync(POSTS_DIRECTORY)) {
+    if (!fs.existsSync(postsDirectory)) {
       return [];
     }
     return fs
-      .readdirSync(POSTS_DIRECTORY)
+      .readdirSync(postsDirectory)
       .filter((file) => file.endsWith('.mdx'))
       .map((file) => file.replace(/\.mdx$/, ''));
   } catch {
@@ -124,126 +93,65 @@ export function getPostSlugs(): string[] {
 }
 
 /**
- * Get a single blog post by slug
+ * Get a single post by slug
  */
 export function getPostBySlug(slug: string): BlogPost | null {
   try {
-    const filePath = path.join(POSTS_DIRECTORY, `${slug}.mdx`);
+    const fullPath = path.join(postsDirectory, `${slug}.mdx`);
 
-    if (!fs.existsSync(filePath)) {
+    if (!fs.existsSync(fullPath)) {
       return null;
     }
 
-    const fileContents = fs.readFileSync(filePath, 'utf8');
+    const fileContents = fs.readFileSync(fullPath, 'utf8');
     const { data, content } = matter(fileContents);
-    const stats = readingTime(content);
 
-    // Validate frontmatter before type assertion
-    const frontmatter = validateFrontmatter(
-      data as Record<string, unknown>,
-      slug
-    );
-    if (!frontmatter) {
+    if (!validateFrontmatter(data, slug)) {
       return null;
     }
 
     return {
       slug,
-      frontmatter,
+      title: data.title as string,
+      date: data.date as string,
+      excerpt: data.excerpt as string,
+      author: (data.author as string) || 'Denver MeshCore',
+      tags: (data.tags as string[]) || [],
+      published: data.published !== false,
       content,
-      readingTime: stats.text,
-      wordCount: stats.words,
+      readingTime: calculateReadingTime(content),
     };
-  } catch {
+  } catch (error) {
+    console.error(`Error reading post ${slug}:`, error);
     return null;
   }
 }
 
 /**
- * Get all blog posts, sorted by date (newest first)
- * Only includes published posts unless includeUnpublished is true
+ * Get all published posts sorted by date
  */
-export function getAllPosts(includeUnpublished = false): BlogPostMeta[] {
+export function getAllPosts(): BlogPostMeta[] {
   const slugs = getPostSlugs();
 
   const posts = slugs
-    .map((slug) => {
-      const post = getPostBySlug(slug);
-      if (!post) return null;
+    .map((slug) => getPostBySlug(slug))
+    .filter((post): post is BlogPost => post !== null && post.published)
+    .sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
+    .map(({ content, published, ...meta }) => meta);
 
-      // Filter out unpublished posts unless explicitly requested
-      if (!includeUnpublished && post.frontmatter.published === false) {
-        return null;
-      }
-
-      return {
-        slug: post.slug,
-        frontmatter: post.frontmatter,
-        readingTime: post.readingTime,
-      } as BlogPostMeta;
-    })
-    .filter((post): post is BlogPostMeta => post !== null);
-
-  // Sort by date, newest first
-  return posts.sort((a, b) => {
-    const dateA = new Date(a.frontmatter.date);
-    const dateB = new Date(b.frontmatter.date);
-    return dateB.getTime() - dateA.getTime();
-  });
+  return posts;
 }
 
 /**
- * Get posts filtered by tag
- */
-export function getPostsByTag(tag: string): BlogPostMeta[] {
-  return getAllPosts().filter((post) =>
-    post.frontmatter.tags?.some(
-      (t) => t.toLowerCase() === tag.toLowerCase()
-    )
-  );
-}
-
-/**
- * Get all unique tags from all posts
+ * Get all unique tags from published posts
  */
 export function getAllTags(): string[] {
   const posts = getAllPosts();
   const tagSet = new Set<string>();
 
   posts.forEach((post) => {
-    post.frontmatter.tags?.forEach((tag) => {
-      tagSet.add(tag.toLowerCase());
-    });
+    post.tags.forEach((tag) => tagSet.add(tag));
   });
 
   return Array.from(tagSet).sort();
-}
-
-/**
- * Get related posts based on shared tags
- */
-export function getRelatedPosts(currentSlug: string, limit = 3): BlogPostMeta[] {
-  const currentPost = getPostBySlug(currentSlug);
-  if (!currentPost || !currentPost.frontmatter.tags?.length) {
-    return [];
-  }
-
-  const allPosts = getAllPosts();
-  const currentTags = new Set(
-    currentPost.frontmatter.tags.map((t) => t.toLowerCase())
-  );
-
-  // Score posts by number of shared tags
-  const scoredPosts = allPosts
-    .filter((post) => post.slug !== currentSlug)
-    .map((post) => {
-      const sharedTags = post.frontmatter.tags?.filter((tag) =>
-        currentTags.has(tag.toLowerCase())
-      ).length ?? 0;
-      return { post, sharedTags };
-    })
-    .filter(({ sharedTags }) => sharedTags > 0)
-    .sort((a, b) => b.sharedTags - a.sharedTags);
-
-  return scoredPosts.slice(0, limit).map(({ post }) => post);
 }

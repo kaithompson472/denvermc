@@ -6,7 +6,6 @@ const quickLinks = [
   { href: '/why-meshcore', label: 'Why MeshCore?' },
   { href: '/nodes', label: 'Nodes' },
   { href: '/observer', label: 'Analyzers' },
-  { href: '/locations', label: 'Locations' },
   { href: '/blog', label: 'Blog' },
   { href: '/about', label: 'About' },
   { href: '/start', label: 'Get Started' },

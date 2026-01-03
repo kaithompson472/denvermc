@@ -1,7 +1,6 @@
 import fs from 'fs';
 import path from 'path';
 import { MetadataRoute } from 'next';
-import { COLORADO_LOCATIONS } from '@/lib/data/locations';
 import { getPostSlugs } from '@/lib/blog';
 import { BASE_URL } from '@/lib/constants';
 
@@ -68,26 +67,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     },
   ];
 
-  // Locations index page
-  const locationsIndex: MetadataRoute.Sitemap = [
-    {
-      url: `${BASE_URL}/locations`,
-      lastModified,
-      changeFrequency: 'weekly',
-      priority: 0.85,
-    },
-  ];
-
-  // Dynamic location pages
-  const locationPages: MetadataRoute.Sitemap = COLORADO_LOCATIONS.map(
-    (location) => ({
-      url: `${BASE_URL}/locations/${location.slug}`,
-      lastModified,
-      changeFrequency: 'weekly' as const,
-      priority: 0.8,
-    })
-  );
-
   // Use case pages (auto-discovered from file system)
   const useCaseSlugs = getUseCaseSlugs();
   const useCasePages: MetadataRoute.Sitemap = useCaseSlugs.map((slug) => ({
@@ -118,8 +97,6 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   return [
     ...staticPages,
-    ...locationsIndex,
-    ...locationPages,
     ...useCasePages,
     ...blogIndex,
     ...blogPages,
