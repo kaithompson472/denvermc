@@ -2,7 +2,8 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import JsonLd from '@/components/JsonLd';
 import { generateBreadcrumbSchema } from '@/lib/schemas/breadcrumb';
-import { COLORADO_LOCATIONS, type Location } from '@/lib/data/locations';
+import { COLORADO_LOCATIONS } from '@/lib/data/locations';
+import { getCoverageLabel, getCoverageBadgeColor, getCoverageColor } from '@/lib/utils/coverage';
 
 export const metadata: Metadata = {
   title: 'Colorado Mesh Network Coverage | Front Range Cities',
@@ -67,51 +68,6 @@ const pageSchema = {
     })),
   },
 };
-
-function getCoverageColor(coverage: Location['meshCoverage']): string {
-  switch (coverage) {
-    case 'excellent':
-      return 'text-forest-500';
-    case 'good':
-      return 'text-mesh';
-    case 'growing':
-      return 'text-sunset-500';
-    case 'planned':
-      return 'text-foreground-muted';
-    default:
-      return 'text-foreground-muted';
-  }
-}
-
-function getCoverageBadgeColor(coverage: Location['meshCoverage']): string {
-  switch (coverage) {
-    case 'excellent':
-      return 'bg-forest-500/10 text-forest-500 border-forest-500/30';
-    case 'good':
-      return 'bg-mesh/10 text-mesh border-mesh/30';
-    case 'growing':
-      return 'bg-sunset-500/10 text-sunset-500 border-sunset-500/30';
-    case 'planned':
-      return 'bg-foreground-muted/10 text-foreground-muted border-foreground-muted/30';
-    default:
-      return 'bg-foreground-muted/10 text-foreground-muted border-foreground-muted/30';
-  }
-}
-
-function getCoverageLabel(coverage: Location['meshCoverage']): string {
-  switch (coverage) {
-    case 'excellent':
-      return 'Excellent Coverage';
-    case 'good':
-      return 'Good Coverage';
-    case 'growing':
-      return 'Growing Network';
-    case 'planned':
-      return 'Coming Soon';
-    default:
-      return 'Coverage Status';
-  }
-}
 
 export default function LocationsPage() {
   // Group locations by coverage level for display
