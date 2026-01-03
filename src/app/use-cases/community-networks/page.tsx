@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import JsonLd from '@/components/JsonLd';
 import { generateBreadcrumbSchema } from '@/lib/schemas/breadcrumb';
+import { BASE_URL } from '@/lib/constants';
 
 export const metadata: Metadata = {
   title: 'Community Mesh Networks | Build Your Neighborhood Network',
@@ -28,7 +29,7 @@ export const metadata: Metadata = {
     title: 'Community Mesh Networks | Denver MeshCore',
     description:
       'Build a resilient community mesh network for your neighborhood. Connect with neighbors, stay prepared for emergencies, and create lasting local communication infrastructure.',
-    url: 'https://denvermc.com/use-cases/community-networks',
+    url: `${BASE_URL}/use-cases/community-networks`,
     type: 'article',
   },
   twitter: {
@@ -40,9 +41,9 @@ export const metadata: Metadata = {
 };
 
 const breadcrumbData = generateBreadcrumbSchema([
-  { name: 'Home', url: 'https://denvermc.com' },
-  { name: 'Use Cases', url: 'https://denvermc.com/use-cases' },
-  { name: 'Community Networks', url: 'https://denvermc.com/use-cases/community-networks' },
+  { name: 'Home', url: BASE_URL },
+  { name: 'Use Cases', url: `${BASE_URL}/use-cases` },
+  { name: 'Community Networks', url: `${BASE_URL}/use-cases/community-networks` },
 ]);
 
 const communityBenefits = [
@@ -223,16 +224,16 @@ const pageSchema = {
   author: {
     '@type': 'Organization',
     name: 'Denver MeshCore',
-    url: 'https://denvermc.com',
+    url: BASE_URL,
   },
   publisher: {
     '@type': 'Organization',
     name: 'Denver MeshCore',
-    url: 'https://denvermc.com',
+    url: BASE_URL,
   },
   mainEntityOfPage: {
     '@type': 'WebPage',
-    '@id': 'https://denvermc.com/use-cases/community-networks',
+    '@id': `${BASE_URL}/use-cases/community-networks`,
   },
 };
 

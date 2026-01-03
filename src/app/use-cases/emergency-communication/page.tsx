@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import JsonLd from '@/components/JsonLd';
 import { generateBreadcrumbSchema } from '@/lib/schemas/breadcrumb';
+import { BASE_URL } from '@/lib/constants';
 
 export const metadata: Metadata = {
   title: 'Emergency Communication Network Colorado | Disaster-Ready Mesh Network',
@@ -28,14 +29,14 @@ export const metadata: Metadata = {
     title: 'Emergency Communication Network Colorado | Denver MeshCore',
     description:
       'When cell towers fail during wildfires, blizzards, or power outages, MeshCore keeps Colorado communities connected. Build resilient emergency communication infrastructure.',
-    url: 'https://denvermc.com/use-cases/emergency-communication',
+    url: `${BASE_URL}/use-cases/emergency-communication`,
   },
 };
 
 const breadcrumbData = generateBreadcrumbSchema([
-  { name: 'Home', url: 'https://denvermc.com' },
-  { name: 'Use Cases', url: 'https://denvermc.com/use-cases' },
-  { name: 'Emergency Communication', url: 'https://denvermc.com/use-cases/emergency-communication' },
+  { name: 'Home', url: BASE_URL },
+  { name: 'Use Cases', url: `${BASE_URL}/use-cases` },
+  { name: 'Emergency Communication', url: `${BASE_URL}/use-cases/emergency-communication` },
 ]);
 
 const articleSchema = {
@@ -46,16 +47,16 @@ const articleSchema = {
   author: {
     '@type': 'Organization',
     name: 'Denver MeshCore',
-    url: 'https://denvermc.com',
+    url: BASE_URL,
   },
   publisher: {
     '@type': 'Organization',
     name: 'Denver MeshCore',
-    url: 'https://denvermc.com',
+    url: BASE_URL,
   },
   mainEntityOfPage: {
     '@type': 'WebPage',
-    '@id': 'https://denvermc.com/use-cases/emergency-communication',
+    '@id': `${BASE_URL}/use-cases/emergency-communication`,
   },
 };
 

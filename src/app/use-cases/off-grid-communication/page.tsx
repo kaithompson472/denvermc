@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import Link from 'next/link';
 import JsonLd from '@/components/JsonLd';
 import { generateBreadcrumbSchema } from '@/lib/schemas/breadcrumb';
+import { BASE_URL } from '@/lib/constants';
 
 export const metadata: Metadata = {
   title: 'Off-Grid Communication Colorado | Backcountry & Hiking Mesh Network',
@@ -31,14 +32,14 @@ export const metadata: Metadata = {
     title: 'Off-Grid Communication for Colorado Backcountry | Denver MeshCore',
     description:
       'Reliable mesh network communication for hiking, camping, and wilderness adventures in Colorado. Stay connected where cell service fails.',
-    url: 'https://denvermc.com/use-cases/off-grid-communication',
+    url: `${BASE_URL}/use-cases/off-grid-communication`,
   },
 };
 
 const breadcrumbData = generateBreadcrumbSchema([
-  { name: 'Home', url: 'https://denvermc.com' },
-  { name: 'Use Cases', url: 'https://denvermc.com/use-cases' },
-  { name: 'Off-Grid Communication', url: 'https://denvermc.com/use-cases/off-grid-communication' },
+  { name: 'Home', url: BASE_URL },
+  { name: 'Use Cases', url: `${BASE_URL}/use-cases` },
+  { name: 'Off-Grid Communication', url: `${BASE_URL}/use-cases/off-grid-communication` },
 ]);
 
 const useCaseScenarios = [
