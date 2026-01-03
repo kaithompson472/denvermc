@@ -1,15 +1,29 @@
+import fs from 'fs';
+import path from 'path';
 import { MetadataRoute } from 'next';
 import { COLORADO_LOCATIONS } from '@/lib/data/locations';
 import { getPostSlugs } from '@/lib/blog';
+import { BASE_URL } from '@/lib/constants';
 
-const BASE_URL = 'https://denvermc.com';
+/**
+ * Auto-discover use case slugs from the use-cases directory
+ */
+function getUseCaseSlugs(): string[] {
+  const useCasesDir = path.join(process.cwd(), 'src/app/use-cases');
 
-// Static use case slugs (these are static pages in the app)
-const USE_CASE_SLUGS = [
-  'emergency-communication',
-  'off-grid-communication',
-  'community-networks',
-];
+  try {
+    if (!fs.existsSync(useCasesDir)) {
+      return [];
+    }
+
+    return fs
+      .readdirSync(useCasesDir, { withFileTypes: true })
+      .filter((dirent) => dirent.isDirectory())
+      .map((dirent) => dirent.name);
+  } catch {
+    return [];
+  }
+}
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const lastModified = new Date();
@@ -74,8 +88,9 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })
   );
 
-  // Use case pages
-  const useCasePages: MetadataRoute.Sitemap = USE_CASE_SLUGS.map((slug) => ({
+  // Use case pages (auto-discovered from file system)
+  const useCaseSlugs = getUseCaseSlugs();
+  const useCasePages: MetadataRoute.Sitemap = useCaseSlugs.map((slug) => ({
     url: `${BASE_URL}/use-cases/${slug}`,
     lastModified,
     changeFrequency: 'monthly' as const,
