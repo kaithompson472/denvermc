@@ -230,8 +230,8 @@ export function NetworkMap({ nodes, className = '' }: NetworkMapProps) {
                 </div>
 
                 <div className="mt-2 pt-2 border-t border-gray-200">
-                  <code className="text-[10px] text-gray-500 break-all">
-                    {node.public_key.slice(0, 16)}...
+                  <code className="text-[10px] text-gray-500">
+                    ID: {node.public_key.slice(0, 2)}
                   </code>
                 </div>
               </div>
