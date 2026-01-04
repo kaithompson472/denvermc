@@ -156,11 +156,16 @@ const advancedTopics = [
     description: "Set up a dedicated repeater to extend network coverage.",
     details: [
       "Flash with Repeater firmware from the web flasher",
+      "For mountain repeaters, use our custom optimized firmware",
       "Place at high elevation with good line of sight",
       "Use a quality external antenna for better range",
       "Ensure stable power supply (wall adapter or solar preferred)",
       "Configure via USB using the web config tool",
     ],
+    link: {
+      text: "Denver Mountain Repeater Firmware",
+      url: "https://github.com/Denver-MeshCore/MeshCore-Mountain-Repeater-Firmware/releases",
+    },
   },
   {
     title: "Solar-Powered Nodes",
@@ -249,6 +254,11 @@ const resources = [
     name: "MeshCore Web Flasher",
     url: "https://flasher.meshcore.co.uk/",
     description: "Flash MeshCore firmware directly from your browser",
+  },
+  {
+    name: "Denver Mountain Repeater Firmware",
+    url: "https://github.com/Denver-MeshCore/MeshCore-Mountain-Repeater-Firmware/releases",
+    description: "Custom optimized firmware for high-traffic mountain repeaters",
   },
   {
     name: "MeshCore GitHub",
@@ -608,7 +618,7 @@ export default function StartPage() {
                   <h3 className="text-xl font-semibold text-foreground">{topic.title}</h3>
                 </div>
                 <p className="text-foreground-muted mb-4">{topic.description}</p>
-                <ul className="space-y-2">
+                <ul className="space-y-2 mb-4">
                   {topic.details.map((detail, index) => (
                     <li key={index} className="text-foreground-muted text-sm flex items-start gap-2">
                       <span className="text-forest-500 mt-0.5">→</span>
@@ -616,6 +626,19 @@ export default function StartPage() {
                     </li>
                   ))}
                 </ul>
+                {'link' in topic && topic.link && (
+                  <a
+                    href={topic.link.url}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="text-mesh hover:text-mesh-light inline-flex items-center gap-2 text-sm font-medium"
+                  >
+                    {topic.link.text}
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                  </a>
+                )}
               </div>
             ))}
           </div>
