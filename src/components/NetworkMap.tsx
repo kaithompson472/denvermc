@@ -224,7 +224,7 @@ export function NetworkMap({ nodes, className = '' }: NetworkMapProps) {
                   {node.last_seen && (
                     <div className="flex justify-between">
                       <span>Last Seen:</span>
-                      <span>{new Date(node.last_seen.endsWith('Z') ? node.last_seen : node.last_seen + 'Z').toLocaleString()}</span>
+                      <span>{new Date(node.last_seen.endsWith('Z') ? node.last_seen : node.last_seen + 'Z').toLocaleString(undefined, { timeZoneName: 'short' })}</span>
                     </div>
                   )}
                 </div>
