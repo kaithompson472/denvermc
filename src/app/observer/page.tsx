@@ -37,7 +37,7 @@ const OBSERVERS = [
   },
   {
     name: 'Meadowood',
-    url: 'https://analyzer.letsmesh.net/node/92D29EDD92724217FB1D42E2D6226004F70469F77D1D6D8C4B6C3B26F78B1001',
+    url: 'https://analyzer.letsmesh.net/node/7BC042F4C47C3539BBEF6C2FA520A9553B0C44E8EFEF2A3D90A39BE2FE7C7F4B',
   },
 ];
 
