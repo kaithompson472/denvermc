@@ -76,9 +76,7 @@ function getNodeColor(node: NodeWithStats): string {
  */
 function isNodeRecentlyActive(node: NodeWithStats): boolean {
   if (!node.last_seen) return false;
-  const lastSeenTime = node.last_seen.endsWith('Z')
-    ? new Date(node.last_seen).getTime()
-    : new Date(node.last_seen + 'Z').getTime();
+  const lastSeenTime = new Date(node.last_seen).getTime();
   return Date.now() - lastSeenTime < MAP_VISIBILITY_THRESHOLD_MS;
 }
 
@@ -224,7 +222,7 @@ export function NetworkMap({ nodes, className = '' }: NetworkMapProps) {
                   {node.last_seen && (
                     <div className="flex justify-between">
                       <span>Last Seen:</span>
-                      <span>{new Date(node.last_seen.endsWith('Z') ? node.last_seen : node.last_seen + 'Z').toLocaleString(undefined, { timeZoneName: 'short' })}</span>
+                      <span>{new Date(node.last_seen).toLocaleString(undefined, { timeZoneName: 'short' })}</span>
                     </div>
                   )}
                 </div>
