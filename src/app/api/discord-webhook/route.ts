@@ -151,9 +151,7 @@ export async function POST(request: Request) {
     // Send to Discord if needed
     let webhookResult: { success: boolean; error?: string } = { success: true };
     if (shouldSendWebhook && embed) {
-      // Mention @everyone only for offline status
-      const mentionEveryone = currentHealth.status === 'offline';
-      const payload = buildWebhookPayload(embed, mentionEveryone);
+      const payload = buildWebhookPayload(embed);
       webhookResult = await sendDiscordWebhook(DISCORD_WEBHOOK_URL, payload);
     }
 
