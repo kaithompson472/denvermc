@@ -211,11 +211,12 @@ export async function getNodesWithStats(): Promise<NodeWithStats[]> {
 
   return result.rows.map((row) => {
     const r = row as Record<string, unknown>;
+    const node = mapRowToNode(r);
     return {
-      ...mapRowToNode(r),
+      ...node,
       packets_today: Number(r.packets_30d) || 0, // Keep field name for compatibility
       packets_total: Number(r.packets_total) || 0,
-      is_online: isNodeOnline(r.last_seen as string | null),
+      is_online: isNodeOnline(r.last_seen as string | null, node.node_type),
     };
   });
 }

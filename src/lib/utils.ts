@@ -2,10 +2,10 @@
  * Shared utility functions for the Denver MeshCore platform
  */
 
-import { ONLINE_THRESHOLD_MS } from './constants';
+import { ONLINE_THRESHOLD_MS, REPEATER_ONLINE_THRESHOLD_MS } from './constants';
 
 // Re-export for backwards compatibility
-export { ONLINE_THRESHOLD_MS } from './constants';
+export { ONLINE_THRESHOLD_MS, REPEATER_ONLINE_THRESHOLD_MS } from './constants';
 
 // =============================================================================
 // Time Formatting
@@ -85,12 +85,20 @@ export function truncatePublicKey(
 
 /**
  * Determine if a node is online based on last_seen timestamp
- * A node is considered online if seen within the last 15 minutes
+ * Companions: online if seen within last 15 minutes (no auto-advertise)
+ * All other nodes: online if seen within last 12 hours (default advert interval)
  */
-export function isNodeOnline(lastSeen: string | null): boolean {
+export function isNodeOnline(lastSeen: string | null, nodeType?: string): boolean {
   if (!lastSeen) return false;
   const lastSeenDate = new Date(lastSeen);
-  const threshold = new Date(Date.now() - ONLINE_THRESHOLD_MS);
+
+  // Companions don't auto-advertise, so use shorter threshold
+  // All other node types (repeater, room_server, gateway, etc.) use 12-hour threshold
+  const thresholdMs = nodeType === 'companion'
+    ? ONLINE_THRESHOLD_MS
+    : REPEATER_ONLINE_THRESHOLD_MS;
+
+  const threshold = new Date(Date.now() - thresholdMs);
   return lastSeenDate >= threshold;
 }
 

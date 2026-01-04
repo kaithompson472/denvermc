@@ -45,6 +45,9 @@ export const API_CACHE_TIMES = {
 /** Online threshold in milliseconds (15 minutes) */
 export const ONLINE_THRESHOLD_MS = 15 * 60 * 1000;
 
+/** Repeater online threshold in milliseconds (12 hours) - matches default advert interval */
+export const REPEATER_ONLINE_THRESHOLD_MS = 12 * 60 * 60 * 1000;
+
 /** Map visibility threshold in milliseconds (24 hours) - nodes not seen within this time are hidden from map */
 export const MAP_VISIBILITY_THRESHOLD_MS = 24 * 60 * 60 * 1000;
 
