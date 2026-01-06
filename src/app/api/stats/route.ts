@@ -38,7 +38,11 @@ async function fetchBotStats(): Promise<BotStats | null> {
       headers['CF-Access-Client-Secret'] = CF_ACCESS_CLIENT_SECRET;
     }
 
-    const res = await fetch(BOT_API_URL, {
+    // Add top_users_window=30d to get 30-day data for top_users (matches UI labels)
+    const url = new URL(BOT_API_URL);
+    url.searchParams.set('top_users_window', '30d');
+
+    const res = await fetch(url.toString(), {
       signal: controller.signal,
       headers,
       next: { revalidate: 60 },

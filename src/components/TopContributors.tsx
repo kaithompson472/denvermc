@@ -110,7 +110,7 @@ export function TopContributors({ refreshInterval = 30000 }: TopContributorsProp
           />
         </svg>
         Top Messagers
-        <span className="text-xs font-normal text-foreground-muted ml-auto">24h</span>
+        <span className="text-xs font-normal text-foreground-muted ml-auto">30d</span>
       </h3>
 
       <div className="space-y-4">
