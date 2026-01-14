@@ -2,9 +2,10 @@
 
 import { useState, useEffect, useCallback } from 'react';
 import type { NetworkHealth, ApiResponse } from '@/lib/types';
+import { OBSERVER_REFRESH_INTERVAL } from '@/lib/constants';
 
 interface NetworkHealthCardProps {
-  refreshInterval?: number; // in milliseconds, default 30000 (30 seconds)
+  refreshInterval?: number;
 }
 
 interface HealthState {
@@ -35,7 +36,7 @@ const STATUS_CONFIG = {
   },
 } as const;
 
-export function NetworkHealthCard({ refreshInterval = 30000 }: NetworkHealthCardProps) {
+export function NetworkHealthCard({ refreshInterval = OBSERVER_REFRESH_INTERVAL }: NetworkHealthCardProps) {
   const [state, setState] = useState<HealthState>({
     health: null,
     loading: true,

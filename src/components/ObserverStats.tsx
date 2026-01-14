@@ -2,12 +2,13 @@
 
 import { useStats } from '@/hooks/useStats';
 import { formatNumber, formatPercentage, formatDecimal } from '@/lib/utils';
+import { OBSERVER_REFRESH_INTERVAL } from '@/lib/constants';
 
 interface ObserverStatsProps {
-  refreshInterval?: number; // in milliseconds, default 30000 (30 seconds)
+  refreshInterval?: number;
 }
 
-export function ObserverStats({ refreshInterval = 30000 }: ObserverStatsProps) {
+export function ObserverStats({ refreshInterval = OBSERVER_REFRESH_INTERVAL }: ObserverStatsProps) {
   const { stats, health, loading, error, refetch } = useStats({
     refreshInterval,
     includeHealth: true,

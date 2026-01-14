@@ -1,12 +1,13 @@
 'use client';
 
 import { useStats } from '@/hooks/useStats';
+import { OBSERVER_REFRESH_INTERVAL } from '@/lib/constants';
 
 interface TopContributorsProps {
   refreshInterval?: number;
 }
 
-export function TopContributors({ refreshInterval = 30000 }: TopContributorsProps) {
+export function TopContributors({ refreshInterval = OBSERVER_REFRESH_INTERVAL }: TopContributorsProps) {
   const { stats, loading, error, refetch } = useStats({
     refreshInterval,
     includeHealth: false,

@@ -54,8 +54,8 @@ export const MAP_VISIBILITY_THRESHOLD_MS = 24 * 60 * 60 * 1000;
 /** Default refresh interval for live data (1 minute) */
 export const DEFAULT_REFRESH_INTERVAL = 60000;
 
-/** Observer refresh interval (30 seconds) */
-export const OBSERVER_REFRESH_INTERVAL = 30000;
+/** Observer refresh interval (120 seconds) */
+export const OBSERVER_REFRESH_INTERVAL = 120000;
 
 // =============================================================================
 // UI Constants

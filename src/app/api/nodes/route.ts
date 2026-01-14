@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { getNodesWithStats, db } from '@/lib/db';
+import { getCachedOrFetch } from '@/lib/cache';
 import type { ApiResponse, NodeWithStats } from '@/lib/types';
 
 /**
@@ -23,9 +24,8 @@ async function updateObserverLastSeen(): Promise<void> {
   }
 }
 
-// Force dynamic rendering to prevent stale cache issues on Netlify
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+// Allow ISR caching for 30 seconds
+export const revalidate = 30;
 
 /**
  * GET /api/nodes
@@ -33,21 +33,20 @@ export const revalidate = 0;
  */
 export async function GET() {
   try {
-    // Update observer last_seen before fetching
-    await updateObserverLastSeen();
-
-    const nodes = await getNodesWithStats();
+    // Use in-memory cache to reduce function invocations (30 second TTL)
+    const nodes = await getCachedOrFetch<NodeWithStats[]>('nodes', async () => {
+      // Update observer last_seen before fetching
+      await updateObserverLastSeen();
+      return getNodesWithStats();
+    }, 30);
 
     const response = NextResponse.json<ApiResponse<NodeWithStats[]>>({
       success: true,
       data: nodes,
     });
 
-    // Disable CDN caching for real-time data (Cloudflare + Netlify)
-    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-    response.headers.set('CDN-Cache-Control', 'no-store');
-    response.headers.set('Netlify-CDN-Cache-Control', 'no-store, durable=false');
-    response.headers.set('Cloudflare-CDN-Cache-Control', 'no-store');
+    // Allow short caching to reduce function invocations
+    response.headers.set('Cache-Control', 'public, s-maxage=30, stale-while-revalidate=60');
 
     return response;
   } catch (error) {

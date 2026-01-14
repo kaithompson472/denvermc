@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
 import { getCommunityStats } from '@/lib/db';
+import { getCachedOrFetch } from '@/lib/cache';
 import type { ApiResponse, CommunityStats } from '@/lib/types';
 
-// Force dynamic rendering to prevent stale cache issues on Netlify
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+// Allow ISR caching for 30 seconds
+export const revalidate = 30;
 
 // meshcore-bot API URL (configured via environment variable)
 const BOT_API_URL = process.env.BOT_API_URL;
@@ -71,37 +71,37 @@ async function fetchBotStats(): Promise<BotStats | null> {
 
 export async function GET() {
   try {
-    // Fetch both DB stats and bot stats in parallel
-    const [dbStats, botStats] = await Promise.all([
-      getCommunityStats(),
-      fetchBotStats(),
-    ]);
+    // Use in-memory cache to reduce function invocations (30 second TTL)
+    const stats = await getCachedOrFetch<CommunityStats>('stats', async () => {
+      // Fetch both DB stats and bot stats in parallel
+      const [dbStats, botStats] = await Promise.all([
+        getCommunityStats(),
+        fetchBotStats(),
+      ]);
 
-    // Merge stats
-    const stats: CommunityStats = {
-      ...dbStats,
-      ...(botStats && {
-        contacts_24h: botStats.contacts_24h,
-        contacts_7d: botStats.contacts_7d,
-        messages_24h: botStats.messages_24h,
-        total_messages: botStats.total_messages,
-        avg_hop_count: botStats.avg_hop_count,
-        max_hop_count: botStats.max_hop_count,
-        bot_reply_rate_24h: botStats.bot_reply_rate_24h,
-        top_users: botStats.top_users,
-      }),
-    };
+      // Merge stats
+      return {
+        ...dbStats,
+        ...(botStats && {
+          contacts_24h: botStats.contacts_24h,
+          contacts_7d: botStats.contacts_7d,
+          messages_24h: botStats.messages_24h,
+          total_messages: botStats.total_messages,
+          avg_hop_count: botStats.avg_hop_count,
+          max_hop_count: botStats.max_hop_count,
+          bot_reply_rate_24h: botStats.bot_reply_rate_24h,
+          top_users: botStats.top_users,
+        }),
+      };
+    }, 30);
 
     const response = NextResponse.json<ApiResponse<CommunityStats>>({
       success: true,
       data: stats,
     });
 
-    // Disable CDN caching for real-time data (Cloudflare + Netlify)
-    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-    response.headers.set('CDN-Cache-Control', 'no-store');
-    response.headers.set('Netlify-CDN-Cache-Control', 'no-store, durable=false');
-    response.headers.set('Cloudflare-CDN-Cache-Control', 'no-store');
+    // Allow short caching to reduce function invocations
+    response.headers.set('Cache-Control', 'public, s-maxage=30, stale-while-revalidate=60');
 
     return response;
   } catch (error) {

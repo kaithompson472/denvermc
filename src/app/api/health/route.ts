@@ -1,10 +1,10 @@
 import { NextResponse } from 'next/server';
 import { getNetworkHealth, db } from '@/lib/db';
+import { getCachedOrFetch } from '@/lib/cache';
 import type { ApiResponse, NetworkHealth } from '@/lib/types';
 
-// Force dynamic rendering to prevent stale cache issues on Netlify
-export const dynamic = 'force-dynamic';
-export const revalidate = 0;
+// Allow ISR caching for 30 seconds
+export const revalidate = 30;
 
 // meshcore-bot API URL (configured via environment variable)
 const BOT_API_URL = process.env.BOT_API_URL;
@@ -284,69 +284,71 @@ async function updateObserverLastSeen(): Promise<void> {
 
 export async function GET() {
   try {
-    // Fetch DB health, bot stats, and geo data in parallel
-    const [dbHealth, botStats, geoData] = await Promise.all([
-      getNetworkHealth(),
-      fetchBotStats(),
-      calculateGeoSpread(),
-    ]);
+    // Use in-memory cache to reduce function invocations (30 second TTL)
+    const health = await getCachedOrFetch<NetworkHealth>('health', async () => {
+      // Fetch DB health, bot stats, and geo data in parallel
+      const [dbHealth, botStats, geoData] = await Promise.all([
+        getNetworkHealth(),
+        fetchBotStats(),
+        calculateGeoSpread(),
+      ]);
 
-    // If bot is active, update observer's last_seen
-    if (botStats && botStats.messages_24h > 0) {
-      updateObserverLastSeen(); // Fire and forget
-    }
-
-    // Merge all stats into health
-    const health: NetworkHealth = {
-      ...dbHealth,
-      ...(botStats && {
-        contacts_24h: botStats.contacts_24h,
-        contacts_7d: botStats.contacts_7d,
-        messages_24h: botStats.messages_24h,
-        avg_hop_count: botStats.avg_hop_count,
-        max_hop_count: botStats.max_hop_count,
-        bot_reply_rate: botStats.bot_reply_rate_24h,
-        unique_contributors: botStats.top_users.length,
-        avg_response_time_ms: botStats.avg_response_time_ms,
-      }),
-      geo_spread_km: geoData.geo_spread_km,
-      nodes_with_location: geoData.nodes_with_location,
-    };
-
-    // Re-evaluate status and uptime using bot metrics
-    if (botStats && botStats.messages_24h > 0) {
-      // Bot is receiving messages = network is up
-      // Calculate uptime based on bot reply rate (if bot responds, broker is up)
-      health.uptime_pct = Math.round(botStats.bot_reply_rate_24h);
-
-      // At least 1 active node if bot is working
-      if (health.active_nodes === 0) {
-        health.active_nodes = 1;
+      // If bot is active, update observer's last_seen
+      if (botStats && botStats.messages_24h > 0) {
+        updateObserverLastSeen(); // Fire and forget
       }
 
-      // Determine status based on bot activity
-      if (botStats.bot_reply_rate_24h >= 80 && botStats.contacts_24h >= 3) {
-        health.status = 'healthy';
-      } else if (botStats.bot_reply_rate_24h >= 50 || botStats.contacts_24h >= 1) {
-        health.status = 'degraded';
-      }
-    }
+      // Merge all stats into health
+      const result: NetworkHealth = {
+        ...dbHealth,
+        ...(botStats && {
+          contacts_24h: botStats.contacts_24h,
+          contacts_7d: botStats.contacts_7d,
+          messages_24h: botStats.messages_24h,
+          avg_hop_count: botStats.avg_hop_count,
+          max_hop_count: botStats.max_hop_count,
+          bot_reply_rate: botStats.bot_reply_rate_24h,
+          unique_contributors: botStats.top_users.length,
+          avg_response_time_ms: botStats.avg_response_time_ms,
+        }),
+        geo_spread_km: geoData.geo_spread_km,
+        nodes_with_location: geoData.nodes_with_location,
+      };
 
-    // Calculate comprehensive network score
-    const { score, breakdown } = calculateNetworkScore(health, botStats, geoData);
-    health.network_score = score;
-    health.score_breakdown = breakdown;
+      // Re-evaluate status and uptime using bot metrics
+      if (botStats && botStats.messages_24h > 0) {
+        // Bot is receiving messages = network is up
+        // Calculate uptime based on bot reply rate (if bot responds, broker is up)
+        result.uptime_pct = Math.round(botStats.bot_reply_rate_24h);
+
+        // At least 1 active node if bot is working
+        if (result.active_nodes === 0) {
+          result.active_nodes = 1;
+        }
+
+        // Determine status based on bot activity
+        if (botStats.bot_reply_rate_24h >= 80 && botStats.contacts_24h >= 3) {
+          result.status = 'healthy';
+        } else if (botStats.bot_reply_rate_24h >= 50 || botStats.contacts_24h >= 1) {
+          result.status = 'degraded';
+        }
+      }
+
+      // Calculate comprehensive network score
+      const { score, breakdown } = calculateNetworkScore(result, botStats, geoData);
+      result.network_score = score;
+      result.score_breakdown = breakdown;
+
+      return result;
+    }, 30);
 
     const response = NextResponse.json<ApiResponse<NetworkHealth>>({
       success: true,
       data: health,
     });
 
-    // Disable CDN caching for real-time data (Cloudflare + Netlify)
-    response.headers.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
-    response.headers.set('CDN-Cache-Control', 'no-store');
-    response.headers.set('Netlify-CDN-Cache-Control', 'no-store, durable=false');
-    response.headers.set('Cloudflare-CDN-Cache-Control', 'no-store');
+    // Allow short caching to reduce function invocations
+    response.headers.set('Cache-Control', 'public, s-maxage=30, stale-while-revalidate=60');
 
     return response;
   } catch (error) {

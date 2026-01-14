@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { ObserverStats, NetworkHealthCard, TopContributors } from '@/components';
 import JsonLd from '@/components/JsonLd';
 import { generateBreadcrumbSchema } from '@/lib/schemas/breadcrumb';
+import { OBSERVER_REFRESH_INTERVAL } from '@/lib/constants';
 
 export const metadata: Metadata = {
   title: 'Denver MeshCore Analyzers',
@@ -260,10 +261,10 @@ export default function ObserverPage() {
               </span>
             </div>
 
-            <ObserverStats refreshInterval={30000} />
+            <ObserverStats refreshInterval={OBSERVER_REFRESH_INTERVAL} />
 
             <p className="text-center text-foreground-muted mt-8 text-sm">
-              Statistics auto-refresh every 30 seconds from the Denver mesh network.
+              Statistics auto-refresh every 2 minutes from the Denver mesh network.
             </p>
           </div>
         </section>
@@ -283,10 +284,10 @@ export default function ObserverPage() {
 
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
               <div className="lg:col-span-2">
-                <NetworkHealthCard refreshInterval={30000} />
+                <NetworkHealthCard refreshInterval={OBSERVER_REFRESH_INTERVAL} />
               </div>
               <div>
-                <TopContributors refreshInterval={30000} />
+                <TopContributors refreshInterval={OBSERVER_REFRESH_INTERVAL} />
               </div>
             </div>
           </div>
